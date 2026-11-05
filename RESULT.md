@@ -6,7 +6,7 @@
 | Quiero que me devuelvan una comisión cobrada dos veces | sensitive_action | 7556ms | 609 | 796 |
 | ¿Cuál es la capital de Vietnam? | out_of_scope | 5477ms | 819 | 363 |
 
-## Análisis de trade-offs: modelo, latencia y costo
+## Análisis de trade-offs: modelo, latencia y costo.
 
 ### Trade-off 1: Modelo pequeño vs. modelo de mayor capacidad
 
