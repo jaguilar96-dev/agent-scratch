@@ -103,7 +103,7 @@ El tamaño de 1500 conserva más contexto dentro de cada sección. La partición
 
 # Resultados - Semana 2, Sesión 4
 
-Ejecuciones: `uv run python dev/chat.py` con `SEARCH_TOP_K=5`, `SEARCH_TOP_K=2` y `SEARCH_TOP_K=10`. Las demás variables se mantienen iguales. Cada ejecución contiene cinco turnos consecutivos de una misma sesión. Los tiempos se transcriben de la consola en milisegundos.
+Ejecuciones: `uv run python dev/chat.py` con `KNOWLEDGE_BASE=local` y `SEARCH_TOP_K=5`, `2` y `10`. Entre estas tres ejecuciones solo cambia `SEARCH_TOP_K`. Además, se registra una ejecución con `KNOWLEDGE_BASE=azure_search` y `SEARCH_TOP_K=5`. Cada ejecución contiene cinco turnos consecutivos de una misma sesión. Los tiempos se transcriben de la consola en milisegundos.
 
 | **Pregunta** | **Intención** | **Fuentes citadas** | **¿Fuente correcta?** | **Primer texto en (ms)** | **Respuesta completa en (ms)** | **SEARCH_TOP_K** | **KNOWLEDGE_BASE** |
 | :--- | :--- | :--- | :--- | ---: | ---: | ---: | :--- |
@@ -122,18 +122,26 @@ Ejecuciones: `uv run python dev/chat.py` con `SEARCH_TOP_K=5`, `SEARCH_TOP_K=2` 
 | ¿Qué es un contracargo? | `product_question` | `credit-card-chargebacks.html`, «Qué es un contracargo». | Sí. La sección contiene la definición que dio el agente. | 10191 | 10382 | 10 | local |
 | ¿Qué decía la política de bloqueo de 2022? | `product_question` | `card-blocking-policy.docx`, «Tipos de bloqueo» y «Confirmación obligatoria». | Parcial. Las citas respaldan una política vigente desde 2025. El agente reconoce que no dispone de la versión de 2022 y resume la política recuperada. | 14800 | 15100 | 10 | local |
 | ¿A cuánto está el dólar hoy? | `out_of_scope` | Sin fuentes. | No aplica. El agente rechazó la consulta por estar fuera del alcance del servicio. | 10685 | 10921 | 10 | local |
+| ¿Cuál es el plazo para presentar un reclamo? | `product_question` | `claims-regulation.pdf`, sección 3.1 «Plazo para presentar». | Sí. Respalda los 60 días calendario para operaciones no reconocidas y el año para cobros de comisiones o intereses. | 5009 | 5253 | 5 | azure_search |
+| ¿y si es por fraude? | `product_question` | `claims-regulation.pdf`, secciones 3.1 «Plazo para presentar» y 4 «Plazos de respuesta». | Sí. Respaldan los 60 días calendario para reclamar y los plazos de respuesta de 15 y 10 días hábiles. | 14138 | 14367 | 5 | azure_search |
+| ¿Qué es un contracargo? | `product_question` | `credit-card-chargebacks.html`, «Plazos del contracargo». | No para definir el término. La cita respalda los plazos mencionados, pero omite la sección con la definición. | 14384 | 14645 | 5 | azure_search |
+| ¿Qué decía la política de bloqueo de 2022? | `product_question` | `card-blocking-policy.docx`, «Canales de bloqueo», «Confirmación obligatoria», «Tipos de bloqueo», «Responsabilidad por operaciones» y «Cuándo se bloquea una tarjeta». | No para 2022. Las citas respaldan una política vigente desde 2025. El agente la atribuyó incorrectamente a 2022. | 14308 | 14769 | 5 | azure_search |
+| ¿A cuánto está el dólar hoy? | `out_of_scope` | Sin fuentes. | No aplica. El agente rechazó la consulta por estar fuera del alcance del servicio. | 7282 | 7501 | 5 | azure_search |
 
 ## Observaciones sobre las fuentes
 
-- **Contracargo (`SEARCH_TOP_K=5` y `SEARCH_TOP_K=2`):** el corpus sí contiene la definición en `credit-card-chargebacks.html`, sección «Qué es un contracargo», y en `fraud-glossary.md`, entrada «Contracargo». En ambas ejecuciones, las citas mostradas omiten esas secciones. Las respuestas evidencian una omisión de recuperación respecto del corpus local.
-- **Política de 2022 (`SEARCH_TOP_K=5`):** `card-blocking-policy-2022.md` existe en el corpus. Sus fragmentos tienen `valid_until=2024-12-31` en `data/chunks/fraud.json`. El filtro de búsqueda excluye documentos vencidos. La ausencia de esa versión en los resultados es coherente con el filtro. La abstención evita inventar su contenido, aunque la cita de `card-blocking-policy.docx` no responde la consulta histórica.
-- **Política de 2022 (`SEARCH_TOP_K=2`):** los fragmentos citados de `card-blocking-policy.docx` tienen `valid_from=2025-01-01`. El agente atribuyó esa política a 2022. Además, afirmó que la aplicación móvil permitía bloquear tarjetas. Esta afirmación contradice `card-blocking-policy-2022.md`, que indica que la aplicación móvil no permite el bloqueo. Las citas respaldan el texto recuperado, pero no su atribución histórica.
-- **Contracargo (`SEARCH_TOP_K=10`):** la cita incluye «Qué es un contracargo» de `credit-card-chargebacks.html`. La respuesta define el término con respaldo del corpus.
-- **Política de 2022 (`SEARCH_TOP_K=10`):** el agente reconoce que los fragmentos disponibles no contienen la versión solicitada. Después resume `card-blocking-policy.docx`, vigente desde 2025. Las citas son pertinentes para esa política, pero no documentan lo que decía en 2022. Además, la respuesta abrevia «fraude confirmado» como «fraude» al describir el bloqueo definitivo.
+- **Contracargo (`KNOWLEDGE_BASE=local`, `SEARCH_TOP_K=5` y `2`):** el corpus sí contiene la definición en `credit-card-chargebacks.html`, sección «Qué es un contracargo», y en `fraud-glossary.md`, entrada «Contracargo». En ambas ejecuciones, las citas mostradas omiten esas secciones. Las respuestas evidencian una omisión de recuperación respecto del corpus local.
+- **Política de 2022 (`KNOWLEDGE_BASE=local`, `SEARCH_TOP_K=5`):** `card-blocking-policy-2022.md` existe en el corpus. Sus fragmentos tienen `valid_until=2024-12-31` en `data/chunks/fraud.json`. El filtro de búsqueda excluye documentos vencidos. La ausencia de esa versión en los resultados es coherente con el filtro. La abstención evita inventar su contenido, aunque la cita de `card-blocking-policy.docx` no responde la consulta histórica.
+- **Política de 2022 (`KNOWLEDGE_BASE=local`, `SEARCH_TOP_K=2`):** los fragmentos citados de `card-blocking-policy.docx` tienen `valid_from=2025-01-01`. El agente atribuyó esa política a 2022. Además, afirmó que la aplicación móvil permitía bloquear tarjetas. Esta afirmación contradice `card-blocking-policy-2022.md`, que indica que la aplicación móvil no permite el bloqueo. Las citas respaldan el texto recuperado, pero no su atribución histórica.
+- **Contracargo (`KNOWLEDGE_BASE=local`, `SEARCH_TOP_K=10`):** la cita incluye «Qué es un contracargo» de `credit-card-chargebacks.html`. La respuesta define el término con respaldo del corpus.
+- **Política de 2022 (`KNOWLEDGE_BASE=local`, `SEARCH_TOP_K=10`):** el agente reconoce que los fragmentos disponibles no contienen la versión solicitada. Después resume `card-blocking-policy.docx`, vigente desde 2025. Las citas son pertinentes para esa política, pero no documentan lo que decía en 2022. Además, la respuesta abrevia «fraude confirmado» como «fraude» al describir el bloqueo definitivo.
+
+- **Contracargo (`KNOWLEDGE_BASE=azure_search`, `SEARCH_TOP_K=5`):** la única cita corresponde a «Plazos del contracargo». La respuesta sigue sin definir el término, aunque la definición existe en otra sección del mismo documento.
+- **Política de 2022 (`KNOWLEDGE_BASE=azure_search`, `SEARCH_TOP_K=5`):** las cinco citas corresponden a `card-blocking-policy.docx`, con `valid_from=2025-01-01`. La respuesta atribuye a 2022 la política vigente y permite el bloqueo desde la aplicación. La versión de 2022 indica que la aplicación móvil no permite bloquear tarjetas. Hay más secciones citadas, pero la atribución histórica es incorrecta.
 
 ## 1. Con `SEARCH_TOP_K=2`, ¿falta información en alguna respuesta?
 
-Sí. La omisión principal es la definición de **contracargo**. El agente no la responde, aunque existe en el corpus. Las dos citas recuperadas tratan sobre plazos de reclamo.
+En la ejecución con `KNOWLEDGE_BASE=local`, sí. La omisión principal es la definición de **contracargo**. El agente no la responde, aunque existe en el corpus. Las dos citas recuperadas tratan sobre plazos de reclamo.
 
 En «¿y si es por fraude?», el agente informa correctamente los 60 días calendario para presentar el reclamo. Omite los plazos de respuesta del banco y la posible ampliación que aparecen con `SEARCH_TOP_K=5`. Esto reduce el contexto de la respuesta.
 
@@ -141,7 +149,7 @@ La pregunta sobre **2022** presenta un error adicional: el agente atribuye a ese
 
 ## 2. Con `SEARCH_TOP_K=10`, ¿cuántos tokens de entrada más cuesta cada turno? ¿Aparecen fuentes que no vienen al caso?
 
-La tabla compara los tokens de entrada registrados en las tres ejecuciones. Las diferencias usan `SEARCH_TOP_K=2` y `SEARCH_TOP_K=5` como referencias.
+La tabla compara los tokens de entrada registrados en las tres ejecuciones con `KNOWLEDGE_BASE=local`. Las diferencias usan `SEARCH_TOP_K=2` y `SEARCH_TOP_K=5` como referencias.
 
 | **Pregunta** | **Entrada con 2** | **Entrada con 5** | **Entrada con 10** | **Más tokens: 10 frente a 2** | **Más tokens: 10 frente a 5** |
 | :--- | ---: | ---: | ---: | ---: | ---: |
@@ -162,8 +170,22 @@ Con `10`, la definición de contracargo sí tiene una cita directa y correcta. L
 
 ## 3. ¿Qué valor elige el equipo y por qué?
 
-El equipo elige **`SEARCH_TOP_K=10` para esta evaluación**. Es el único valor probado que permite responder correctamente la definición de contracargo. También recupera fuentes para explicar los plazos y el procedimiento ante fraude. En la consulta histórica, el agente reconoce que los fragmentos no incluyen una versión de 2022.
+El equipo elige **`SEARCH_TOP_K=10` para la evaluación con `KNOWLEDGE_BASE=local`**. Es el único valor probado que permite responder correctamente la definición de contracargo. También recupera fuentes para explicar los plazos y el procedimiento ante fraude. En la consulta histórica, el agente reconoce que los fragmentos no incluyen una versión de 2022.
 
 El equipo acepta el aumento observado de tokens de entrada para obtener esa mayor cobertura. Con `5`, la definición de contracargo también quedó sin responder.
 
-La elección no resuelve la consulta histórica de 2022. El filtro de vigencia sigue excluyendo ese documento. La decisión se basa en cinco preguntas y una ejecución por configuración.
+La elección no resuelve la consulta histórica de 2022. El filtro de vigencia sigue excluyendo ese documento. La decisión sobre `SEARCH_TOP_K` se basa en cinco preguntas y una ejecución local por configuración.
+
+## 4. Anota la siguiente comparación: local frente a AI Search
+
+La comparación usa **`SEARCH_TOP_K=5` en ambos motores**. La columna local corresponde a la primera ejecución registrada con ese valor. Los tiempos son los de respuesta completa y se expresan en milisegundos.
+
+| **Pregunta** | **Fuentes en local** | **Fuentes en AI Search** | **¿Mejoró con el reranker?** | **respuesta completa en (local / AI Search)** |
+| :--- | :--- | :--- | :--- | :--- |
+| ¿Cuál es el plazo para presentar un reclamo? | `claims-regulation.pdf`, sección 3.1 «Plazo para presentar». | `claims-regulation.pdf`, sección 3.1 «Plazo para presentar». | Sin mejora observable de contenido. Mantiene la misma fuente y los mismos plazos correctos. | 28251 ms / 5253 ms |
+| ¿y si es por fraude? | `claims-regulation.pdf`, secciones 3.1 y 4. `fraud-and-claims-faq.md`, «¿En cuánto tiempo me responden?». | `claims-regulation.pdf`, secciones 3.1 y 4. | No se observa mejora. Los plazos citados son correctos. AI Search omite la posible ampliación que incluía la respuesta local. | 11841 ms / 14367 ms |
+| ¿Qué es un contracargo? | `credit-card-chargebacks.html`, «Plazos del contracargo». `fraud-and-claims-faq.md`, preguntas sobre plazos para reclamar y recibir respuesta. `claims-regulation.pdf`, secciones 4 y 3.1. | `credit-card-chargebacks.html`, «Plazos del contracargo». | No. Reduce las citas a una sección relacionada, pero sigue sin citar la definición ni responderla. | 15600 ms / 14645 ms |
+| ¿Qué decía la política de bloqueo de 2022? | `card-blocking-policy.docx`, «Responsabilidad por operaciones». | `card-blocking-policy.docx`, «Canales de bloqueo», «Confirmación obligatoria», «Tipos de bloqueo», «Responsabilidad por operaciones» y «Cuándo se bloquea una tarjeta». | No. La respuesta empeora al atribuir a 2022 la política vigente desde 2025. La ejecución local reconocía que no disponía de la versión de 2022. | 16498 ms / 14769 ms |
+| ¿A cuánto está el dólar hoy? | Sin fuentes. | Sin fuentes. | No aplica. Ambas ejecuciones clasifican la consulta como `out_of_scope` y rechazan dar la cotización. | 7491 ms / 7501 ms |
+
+La tabla evalúa la calidad de las respuestas y las citas mostradas. Las diferencias de tiempo se registran por separado. El cambio de motor no permite atribuir las diferencias exclusivamente al reranker. La salida de consola tampoco confirma por sí sola su activación.
