@@ -1,0 +1,1 @@
+{"id": "fraud-AIE35MC", "type": "answerable", "history": [], "question": "Ya pasó más de 90 días después de haber realizado una operación no reconocida. ¿Puedo presentar un reclamo?", "expected_intent": "product_question", "expected_sources": ["claims-regulation.pdf", "fraud-and-claims-faq.md"], "forbidden_sources": [], "key_facts": ["60 días calendario"]}
