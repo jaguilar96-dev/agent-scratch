@@ -85,3 +85,28 @@ Tú: ¿Qué decía la política de bloqueo de 2022?
 Tú: ¿A cuánto está el dólar hoy?
   Agente [out_of_scope]: No puedo proporcionar cotizaciones en tiempo real. Para conocer el tipo de cambio hoy, revisa la web o la app del Banco Demo, la página del Banco Central de Reserva del Perú o consulta una casa de cambio autorizada.
   (primer texto en 7840 ms, respuesta completa en 7999 ms, 1687 tokens de entrada, 610 de salida) 
+
+# S5
+## Línea base (S5)
+Resumen de 30 casos (juez local):
+  recall@5: 1.00   intención: 0.93   fuentes: 0.97   hechos: 0.93
+  apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 28589 de entrada, 15210 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261110-103547.json
+
+## Línea base + 3 preguntas
+Resumen de 33 casos (juez local):
+  recall@5: 0.97   intención: 1.00   fuentes: 0.94   hechos: 0.80
+  apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 31144 de entrada, 18452 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261110-105557.json
+
+## Resultado del juez
+Resumen de 33 casos (juez azure_evaluation):
+  recall@5: 0.97   intención: 1.00   fuentes: 0.94   hechos: 0.83
+  apoyo: 4.9/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 31191 de entrada, 17916 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261113-085356.json
