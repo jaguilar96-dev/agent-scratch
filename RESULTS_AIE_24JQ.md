@@ -194,3 +194,33 @@ fraud-29     personal_data    ok      ok       ok      ok     5.0        5.0   1
 fraud-30     personal_data    ok      ok       ok      ok     5.0        4.8   1.0  ok
 fraud-AIE24JQ answerable       ok      ok       ok      ok     4.7        5.0   1.0  ok
 ```
+
+## Sesión 6 — Tools del MCP en el chat
+
+Dominio: `fraud`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y el compartido (`bank-mcp`).
+
+### Tools de tu dominio
+
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | 4: `block_card` (acción sensible), `file_claim` (acción sensible), `get_claim_status` (consulta), `get_transactions` (consulta) |
+| Compartido | 4: las mismas, con los mismos parámetros (`block_card`, `file_claim`, `get_claim_status`, `get_transactions`) |
+
+Paso 7 con el mock: `get_transactions customer_id=CUS-1001 limit=2` devolvió TRX-3001 y TRX-3002 (SUPERMERCADO DEMO SAN ISIDRO, -186.40 PEN, el cargo duplicado). `block_card card_id=CRD-2002` bloqueó la tarjeta y la segunda vez respondió `La tarjeta CRD-2002 ya está bloqueada`. Con `DOMAIN=loans` se ven 3 tools (`get_credit_profile`, `simulate_installment`, `submit_loan_application`).
+
+### Conversación en `dev/chat.py` (paso 12)
+
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | `get_transactions(customer_id=CUS-1001, limit=20)` y luego `file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, ...)` | Encontró TRX-3001 y TRX-3002. En vez de solo ofrecer el reclamo, lo pidió en el mismo turno; `file_claim` NO SE EJECUTÓ (pendiente de aprobación) y la respuesta lo dijo así | 39106 / 39366 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado TRX-3002 | `file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, reason=Cobro duplicado...)` | NO SE EJECUTÓ: quedó pendiente de aprobación de un asesor. La respuesta no dijo "registré", y citó el procedimiento de reclamos del corpus | 25255 / 25537 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | ninguna | Respondió que no puede consultar saldos y sugirió app, cajero, banca telefónica o agencia | 11964 / 12122 |
+| Tool de otro dominio | `mcp_tools.py simulate_installment amount=20000 term_months=24` | `simulate_installment` | `Error de la tool: Unknown tool: 'simulate_installment'`: para fraud esa tool no existe | — |
+
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
+
+No. Con el saldo de ahorros no pidió ninguna tool ni dio un monto: dijo que no puede consultarlo y ofreció los canales del banco. En los turnos con tools, los datos (TRX-3001, TRX-3002, el comercio y el monto) salieron del resultado de `get_transactions`.
+
+### Conclusión
+
+El agente usa las tools del MCP de su dominio y combina sus datos con el RAG (citas del procedimiento de reclamos). Las acciones sensibles nunca llegan al MCP: `_run` las deja pendientes de aprobación, y eso importó en el primer turno, donde el modelo pidió `file_claim` sin esperar la confirmación del cliente. La sesión 8 (aprobación humana) es la que cierra ese hueco. Cambiar del mock al MCP compartido fue solo cambiar `MCP_URL` (con `/mcp` al final) y `MCP_SCOPE` en el `.env`: aparecieron las mismas 4 tools. Con tools, el primer texto tarda entre 25 y 40 s, porque cada vuelta del ciclo es otra llamada a un modelo que razona.
