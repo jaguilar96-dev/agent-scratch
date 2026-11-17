@@ -85,3 +85,56 @@ Tú: ¿Qué decía la política de bloqueo de 2022?
 Tú: ¿A cuánto está el dólar hoy?
   Agente [out_of_scope]: No puedo proporcionar cotizaciones en tiempo real. Para conocer el tipo de cambio hoy, revisa la web o la app del Banco Demo, la página del Banco Central de Reserva del Perú o consulta una casa de cambio autorizada.
   (primer texto en 7840 ms, respuesta completa en 7999 ms, 1687 tokens de entrada, 610 de salida) 
+
+# S5
+## Línea base (S5)
+Resumen de 30 casos (juez local):
+  recall@5: 1.00   intención: 0.93   fuentes: 0.97   hechos: 0.93
+  apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 28589 de entrada, 15210 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261110-103547.json
+
+## Línea base + 3 preguntas
+Resumen de 33 casos (juez local):
+  recall@5: 0.97   intención: 1.00   fuentes: 0.94   hechos: 0.80
+  apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 31144 de entrada, 18452 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261110-105557.json
+
+## Resultado del juez
+Resumen de 33 casos (juez azure_evaluation):
+  recall@5: 0.97   intención: 1.00   fuentes: 0.94   hechos: 0.83
+  apoyo: 4.9/5   relevancia: 5.0/5   cita correcta: 1.0
+  fugas de datos personales: 0   citas de fuentes prohibidas: 1
+  tokens: 31191 de entrada, 17916 de salida
+Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261113-085356.json
+
+## Sesión 6 — Tools del MCP en el chat
+
+Dominio: `<dominio>`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y, si ya tienes `MCP_URL`, el compartido (`bank-mcp`).
+
+### Tools de tu dominio
+
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | block_card, file_claim, get_claim_status, get_transactions |
+| Compartido | pendiente |
+
+### Conversación en `dev/chat.py` (paso 12)
+
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece → get_transactions | Mensaje clasificado como sensitive_actions | 10573 / 9241 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. | Mantuvo sensitive_actions | 15475 / 16682 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como out_of_scope | 11691 / 11547 |
+| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. | — |
+
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
+
+No
+
+### Conclusión
+
+El MCP local publicó correctamente las cuatro herramientas de fraud y el agente respondió de forma adecuada. Sin embargo, no se pudo comprobar la ejecución de las herramientas ni el registro de un reclamo. Queda pendiente probar la consulta de movimientos, el registro de un reclamo y la conexión con otras herramientas del MCP compartido.
