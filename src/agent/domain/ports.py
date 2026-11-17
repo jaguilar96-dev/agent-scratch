@@ -44,6 +44,16 @@ class QueryRewriter(Protocol):
 
     def rewrite(self, messages: list[Message]) -> RewriteResult: ...
 
+    def stream(self, messages: list[Message]) -> Iterator[ModelEvent]:
+        """Igual que complete, pero entrega la respuesta mientras se escribe. El último evento es el ModelResult."""
+        ...
+
+
+class QueryRewriter(Protocol):
+    """Reescribe una pregunta de seguimiento para que se entienda sin el historial. S4: el mismo modelo de chat."""
+
+    def rewrite(self, messages: list[Message]) -> RewriteResult: ...
+
 
 class ConversationStore(Protocol):
     """Historial por sesión. T1: memoria; T4: Cosmos DB."""

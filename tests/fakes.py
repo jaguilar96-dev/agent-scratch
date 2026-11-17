@@ -71,6 +71,10 @@ class RecordingChatModel(FakeChatModel):
         self.rewrites.append(messages)
         return super().rewrite(messages)
 
+    def rewrite(self, messages: list[Message]) -> RewriteResult:
+        self.rewrites.append(messages)
+        return super().rewrite(messages)
+
 
 class FailingChatModel:
     def __init__(self, kind: ErrorKind) -> None:
