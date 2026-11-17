@@ -1,0 +1,57 @@
+{
+ "summary": {
+  "cases": 1,
+  "recall_at_k": 0.0,
+  "intent_accuracy": 0.0,
+  "sources_ok": 0.0,
+  "facts_ok": 0.0,
+  "groundedness": 3.0,
+  "relevance": 2.0,
+  "citation_correct": 0.0,
+  "personal_data_leaks": 0,
+  "forbidden_citations": 0,
+  "prompt_tokens": 1293,
+  "completion_tokens": 490
+ },
+ "results": [
+  {
+   "case_id": "fraud-AIE05LA",
+   "case_type": "answerable",
+   "answer": "No entendí tu mensaje. Por favor escribe tu consulta relacionada con robo/pérdida de tarjeta, movimientos no reconocidos, contracargos o el estado de un reclamo. Si necesitas bloquear una tarjeta o registrar un reclamo, indícalo y te explicaré el siguiente paso (se requiere confirmación antes de ejecutar). No compartas números completos de tarjeta, DNI ni claves aquí.",
+   "intent": "out_of_scope",
+   "cited_sources": [],
+   "retrieved_sources": [
+    "response-times.csv",
+    "digital-security-and-phishing.md",
+    "claims-regulation.pdf",
+    "claims-regulation.pdf",
+    "sample-cases.pdf",
+    "claims-regulation.pdf",
+    "sample-cases.pdf",
+    "claims-regulation.pdf"
+   ],
+   "recall": false,
+   "intent_ok": false,
+   "sources_ok": false,
+   "facts_ok": false,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 3.0,
+    "relevance": 2.0,
+    "citation_correct": 0.0,
+    "reasoning": "La respuesta contiene algunas afirmaciones alineadas con los fragmentos (temas permitidos: robo/pérdida de tarjeta, movimientos no reconocidos, contracargos y estado de reclamo aparecen en los documentos), pero incluye otras no respaldadas por los fragmentos (p. ej. “se requiere confirmación antes de ejecutar” y la admonición exacta de no compartir datos completos no aparecen textualmente). Además no ofrece respuesta concreta a una pregunta del cliente sino una petición de aclaración. No se citaron fuentes.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5225,
+    "prompt_tokens": 1293,
+    "completion_tokens": 490
+   }
+  }
+ ]
+}
