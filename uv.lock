@@ -101,15 +101,15 @@ wheels = [
 
 [[package]]
 name = "authlib"
-version = "1.9.8"
+version = "1.9.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
     { name = "joserfc" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7e/9d/4260bc37e6b859f654394c4815a75c92f3505b42b53135a4603bba60d52d/authlib-1.9.8.tar.gz", hash = "sha256:879735216a0b805a4dfedb4fdd19e7d75ebb8debd70cc7566da9d813db34458d", size = 184126, upload-time = "2026-11-16T10:39:38.943Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/04/96/6e7ed72bb49762a9b65d51c4cb235d793f0485cd8d6f7e9404ce955a4808/authlib-1.9.5.tar.gz", hash = "sha256:3f031d5e9b6486089e91e8f7f1b68f36275f3151c66460d650fc90d420545fd7", size = 183564, upload-time = "2026-11-05T16:13:18.409Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/09/d3/c22999bcbc6c0207bdf4c8de47a65c01a2c4c5818701162a6f6bbdb94ebe/authlib-1.9.8-py2.py3-none-any.whl", hash = "sha256:de0b0138d398d0058f3139d8332bc8f674143dca0b446116ff285c7f417a4f7e", size = 267514, upload-time = "2026-11-16T10:39:37.475Z" },
+    { url = "https://files.pythonhosted.org/packages/58/d7/d384e7a639dd1d018767ba0fe39601b61cded066bb7af38db31ec998252d/authlib-1.9.5-py2.py3-none-any.whl", hash = "sha256:e32a63e3d869196b61816b2602231862179a2ffc29358c009d1f022c8b86a8b2", size = 267074, upload-time = "2026-11-05T16:13:16.766Z" },
 ]
 
 [[package]]
@@ -330,7 +330,7 @@ wheels = [
 
 [[package]]
 name = "cyclopts"
-version = "5.5.2"
+version = "5.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -338,9 +338,9 @@ dependencies = [
     { name = "rich" },
     { name = "rich-rst" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/49/5d/cee0096dd8c5ad13ce516599c4823637d0107643666a03ddc43a9580391f/cyclopts-5.5.2.tar.gz", hash = "sha256:c0339b7ddd7b1c886f13bb8b68a6a65aa7144d3027f1d0e290be514b8fe1589b", size = 258336, upload-time = "2026-11-16T16:26:28.322Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/a2/34a66cdd2c2a5ffcfb15c195091bb944cf25bc8c1c0faeb4726ecb906c18/cyclopts-5.4.2.tar.gz", hash = "sha256:f0374ffae32bba180db7eae1d17a97a1bcd656455a3b7436f2133c4132f7c5b5", size = 257872, upload-time = "2026-11-12T13:25:49.482Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/b2/be66b75ce0a3ccc7aa3601c9e7f9cd0fbad4301183fc7105c6b9faebeaeb/cyclopts-5.5.2-py3-none-any.whl", hash = "sha256:4fbe863ebace1c65dafc6520c82217915b103d27fbd1d8fcd168f2abcca3a12a", size = 301206, upload-time = "2026-11-16T16:26:26.615Z" },
+    { url = "https://files.pythonhosted.org/packages/68/03/9347dfa31741d38a02f365a5cca5b76fd1288e8f9ee0fa8120eb301e9876/cyclopts-5.4.2-py3-none-any.whl", hash = "sha256:f8a07bf41d14447960fb75d07b564b13faea1b9a7530cb669db08e43134bbff9", size = 300704, upload-time = "2026-11-12T13:25:47.475Z" },
 ]
 
 [[package]]
@@ -363,15 +363,15 @@ wheels = [
 
 [[package]]
 name = "email-validator"
-version = "2.4.0"
+version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "dnspython" },
     { name = "idna" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c0/4d/f5e9d9de19f4b8f9e33d802fe3efb0ef96e88d4d6d45d604f335bef2f1ef/email_validator-2.4.0.tar.gz", hash = "sha256:be487bc50bc3bd832a98515a55a15649d9bec06d954fa178663190714b6c4ee1", size = 55168, upload-time = "2026-11-14T20:21:28.125Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/22/900cb125c76b7aaa450ce02fd727f452243f2e91a61af068b40adba60ea9/email_validator-2.3.0.tar.gz", hash = "sha256:9fc05c37f2f6cf439ff414f8fc46d917929974a82244c20eb10231ba60c54426", size = 51238, upload-time = "2025-08-26T13:09:06.831Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/8b/99e715c59560afa0bf68f21ed16eec794d94293945f57934b70c5255d741/email_validator-2.4.0-py3-none-any.whl", hash = "sha256:4454e41c4e1c6b6caee34a1dc71d5e736791562be8fd179b02e298f796522684", size = 36810, upload-time = "2026-11-14T20:21:27.14Z" },
+    { url = "https://files.pythonhosted.org/packages/de/15/545e2b6cf2e3be84bc1ed85613edd75b8aea69807a71c26f4ca6a9258e82/email_validator-2.3.0-py3-none-any.whl", hash = "sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4", size = 35604, upload-time = "2025-08-26T13:09:05.858Z" },
 ]
 
 [[package]]
@@ -405,19 +405,19 @@ wheels = [
 
 [[package]]
 name = "fastmcp"
-version = "4.2.0"
+version = "4.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastmcp-slim", extra = ["client", "server"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/3f/bb84343d2fec87230659632b7c186c0f0424c9744ca24b11a994bb3d6907/fastmcp-4.2.0.tar.gz", hash = "sha256:833508360b9a5db6ae3524cf12471b31716c210feee0c726a867e38c43a9287f", size = 41447291, upload-time = "2026-11-13T17:09:01.648Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/de/fa/5b41ba810e250a8a9b9953e548defec7755d8c16733c4721a1fa87837926/fastmcp-4.1.8.tar.gz", hash = "sha256:1c2b4877472f3d3ad38ffe7f835d3316f9ac6eada801dcfa8db70b15da6054fd", size = 42873995, upload-time = "2026-11-10T20:44:58.336Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/b2/537e540309fbe0b4257db73bb527bda289588da441ea3fc3f2e164703f97/fastmcp-4.2.0-py3-none-any.whl", hash = "sha256:441351551edac39eed248f0ea0f1d87fd95f44812ffee8b72fa05a5053db903d", size = 8247, upload-time = "2026-11-13T17:08:59.309Z" },
+    { url = "https://files.pythonhosted.org/packages/89/b3/ee4ec632fcf2dae3d252822de552017cb8f5c59306cdaa4225a6b50d2833/fastmcp-4.1.8-py3-none-any.whl", hash = "sha256:7b5e7f3aa1b7c372d7f7284c7ea686f5a6d3d1db96d4c609029b67848c083ba1", size = 8231, upload-time = "2026-11-10T20:44:54.439Z" },
 ]
 
 [[package]]
 name = "fastmcp-slim"
-version = "4.2.0"
+version = "4.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mcp-types" },
@@ -428,9 +428,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/b7/ef6c9830adf73063b911b257ae6b295e40585e1024ba6a9d254fd3d9f060/fastmcp_slim-4.2.0.tar.gz", hash = "sha256:01578f6d1a1423ca073e9d2ea4a193eed3ed9a5330e121fbcd9415511cfd1c0f", size = 805855, upload-time = "2026-11-13T17:07:22.406Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/fa/9cb1e558884b18ea367f3065e56cda9259efa0c4e54954f4e53a7fee9f20/fastmcp_slim-4.1.8.tar.gz", hash = "sha256:e0f194baca7f5781a554d07879cb709beed1a2d0796949e3693e0a96e291506a", size = 772710, upload-time = "2026-11-10T20:44:31.57Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/aa/70/962d98b2bc46ab86243198c164c4d1eff533752468732175298d3100c6e6/fastmcp_slim-4.2.0-py3-none-any.whl", hash = "sha256:174239bed3ac47275afa7fe82941a65f86ad0314205195766c92b138c6dcfebe", size = 994236, upload-time = "2026-11-13T17:07:20.908Z" },
+    { url = "https://files.pythonhosted.org/packages/46/c2/af0e49afd5037714999f98c0e064a6ac57ad421c095623d5922228e35a2f/fastmcp_slim-4.1.8-py3-none-any.whl", hash = "sha256:2686ea58fe1112816101be10892ed2028aaf774c6205546c259be6e5f0c83530", size = 956248, upload-time = "2026-11-10T20:44:30.068Z" },
 ]
 
 [package.optional-dependencies]
@@ -1135,11 +1135,11 @@ wheels = [
 
 [[package]]
 name = "python-multipart"
-version = "0.0.34"
+version = "0.0.33"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7e/c0/c753d487a83d873f6946cee6cbc26cea3fe59a476ad0de99a14938a2fbd8/python_multipart-0.0.34.tar.gz", hash = "sha256:b998ae90ca6e1e363261ce2e0e230281b8af53867b757970abd69ee9edcd843a", size = 52456, upload-time = "2026-11-16T10:40:38.261Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/b7/15b905f6142a9a8a68f66900788da1a32e4d4254452783b37ad1eccb0506/python_multipart-0.0.33.tar.gz", hash = "sha256:b8112424a6abd162ec08d390565dd113ad699f2fe6fef3c987b8bbcbfe9e390d", size = 50499, upload-time = "2026-10-31T14:23:47.461Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/0e/090c52b122d8ec5fa37942c1410fea9cf04ce98bca0c84dde7f0aa11594d/python_multipart-0.0.34-py3-none-any.whl", hash = "sha256:ebacd224bd686eee2f9aa1066a657affe07435a185834e05e5235e2e59173e91", size = 32585, upload-time = "2026-11-16T10:40:37.119Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/1b/6b1b4164ec734cac911460ab599bfbe46afedd42c5c9627fe4235942c314/python_multipart-0.0.33-py3-none-any.whl", hash = "sha256:8f16c07b36add9da6b2ee87d3efcaf0a45a6de9c3d0a5dd94e9ccf7675a7bc45", size = 32253, upload-time = "2026-10-31T14:23:46.33Z" },
 ]
 
 [[package]]

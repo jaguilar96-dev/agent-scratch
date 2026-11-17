@@ -420,3 +420,51 @@ Para `fraud-25`, esperaría una respuesta como: «Puedo ayudarte con fraude, blo
 Después de aplicar los cambios, repetiría los 31 casos con la misma configuración y probaría reformulaciones de preguntas fuera del alcance. Confirmaría **cero citas prohibidas y cero fugas detectadas**, además de mantener los umbrales de recuperación, hechos y apoyo.
 
 Estos cambios quedan como **propuesta de mejora**. Los resultados de la tabla corresponden a la ejecución original, antes de aplicar esas medidas.
+
+
+## Sesión 6 — Tools del MCP en el chat
+
+Dominio: `fraud`. MCP: `http://127.0.0.1:8200/mcp`.
+
+Resultados transcritos de las ejecuciones de `uv run python dev/mcp/mcp_tools.py` y `uv run python dev/chat.py` compartidas en el chat. La conversación contiene tres turnos consecutivos. Los tiempos corresponden al primer texto y a la respuesta completa, según la consola.
+
+### Tools de tu dominio
+
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | **4 herramientas:** `block_card(card_id, reason)` y `file_claim(customer_id, transaction_id, reason)`, acciones sensibles. `get_claim_status(claim_id)` y `get_transactions(customer_id, limit)`, consultas. |
+| Compartido | No ejecutado en la evidencia proporcionada. La única salida de descubrimiento corresponde al MCP local en `http://127.0.0.1:8200/mcp`. |
+
+El contrato local indica que `limit` es opcional en `get_transactions`, con valor predeterminado de 10 y rango de 1 a 50. El descubrimiento confirma las herramientas disponibles, pero no demuestra su ejecución durante la conversación.
+
+### Conversación en `dev/chat.py` (paso 12)
+
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece `→ get_transactions`. | Clasificó el mensaje como `sensitive_action`. Pidió autorización para consultar movimientos e identificar el cargo. Solicitó fecha, monto y comercio. Citó `chargeback-form.md` y `unrecognized-charges-procedure.md`. No mostró movimientos. | 9273 / 9559 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. No aparece `→ file_claim`. | Mantuvo `sensitive_action`. Pidió el ID de la operación o fecha, monto y comercio. Volvió a ofrecer la consulta de movimientos. Indicó que el reclamo quedaría pendiente de aprobación de un asesor. No mostró un ID de reclamo ni un registro confirmado. | 13962 / 14214 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como `out_of_scope`. Explicó que no podía consultar saldos. Remitió a la app, banca por internet o al (01) 555-0200. Citó `service-channels.html`. | 10721 / 10856 |
+| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. La consulta de saldo no demuestra el uso ni el rechazo de una herramienta disponible en otro dominio. | — |
+
+La primera fila conserva el nombre de la prueba de la plantilla. El mensaje real recibió `sensitive_action`, por lo que no verifica una consulta clasificada como `data_query`. La segunda fila registra la confirmación verbal del cliente, pero no acredita la ejecución de la acción.
+
+| **Turno** | **Tokens de entrada** | **Tokens de salida** |
+| :--- | ---: | ---: |
+| Cargo duplicado | 1499 | 911 |
+| Confirmación del reclamo | 1906 | 1395 |
+| Consulta de saldo | 2054 | 1078 |
+| **Total de los tres turnos** | **5459** | **3384** |
+
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
+
+**No inventó un saldo ni afirmó haber registrado el reclamo.** Tampoco presentó movimientos, montos o identificadores obtenidos de una herramienta. El ID `TRX-3002` apareció explícitamente como ejemplo del formato solicitado.
+
+El agente ofreció revisar los «últimos 60 días» de movimientos. El contrato de `get_transactions` admite `customer_id` y `limit`, pero no un intervalo de fechas. La transcripción no demuestra esa cobertura temporal. Por ello, esa oferta requiere verificación y no debe registrarse como una consulta realizada.
+
+### Conclusión
+
+El MCP local publicó las cuatro herramientas de `fraud`. La conversación mostró dos respuestas `sensitive_action` y una `out_of_scope`. El agente pidió los datos necesarios para identificar la operación y rechazó la consulta de saldo sin inventar su valor.
+
+**La prueba no demuestra la ejecución de herramientas MCP ni el registro de un reclamo.** El agente pidió permiso para consultar movimientos, aunque el contrato identifica `get_transactions` como consulta. Incluso después de la confirmación verbal, el flujo no avanzó hasta mostrar movimientos o preparar una acción sobre una transacción identificada.
+
+Para completar la verificación funcional, faltan una consulta que produzca `→ get_transactions` y un resultado, y una solicitud de reclamo con `transaction_id` conocido. También faltan el descubrimiento del MCP compartido y la prueba de una herramienta de otro dominio. Esas ejecuciones no forman parte de los resultados disponibles.
