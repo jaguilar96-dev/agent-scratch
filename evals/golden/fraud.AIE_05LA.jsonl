@@ -1,0 +1,1 @@
+{"id": "fraud-AIE05LA", "type": "answerable", "history": [], "question": "<tu pregunta>", "expected_intent": "product_question", "expected_sources": ["<documento del corpus>"], "forbidden_sources": [], "key_facts": ["<dato que la respuesta tiene que decir>"]}

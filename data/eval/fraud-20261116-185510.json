@@ -1,0 +1,54 @@
+{
+ "summary": {
+  "cases": 1,
+  "recall_at_k": 0.0,
+  "intent_accuracy": 0.0,
+  "sources_ok": 0.0,
+  "facts_ok": 0.0,
+  "groundedness": 3.0,
+  "relevance": 4.0,
+  "citation_correct": 0.0,
+  "personal_data_leaks": 0,
+  "forbidden_citations": 0,
+  "prompt_tokens": 975,
+  "completion_tokens": 713
+ },
+ "results": [
+  {
+   "case_id": "fraud-AIE05LA",
+   "case_type": "answerable",
+   "answer": "Hola. ¿En qué puedo ayudarle? Indique si se trata de robo/pérdida de tarjeta, movimiento no reconocido, contracargo o consulta sobre un reclamo. No comparta números completos de tarjeta, DNI ni claves.",
+   "intent": "greeting",
+   "cited_sources": [],
+   "retrieved_sources": [
+    "credit-card-chargebacks.html",
+    "response-times.csv",
+    "chargeback-form.md",
+    "digital-security-and-phishing.md",
+    "chargeback-form.md"
+   ],
+   "recall": false,
+   "intent_ok": false,
+   "sources_ok": false,
+   "facts_ok": false,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 3.0,
+    "relevance": 4.0,
+    "citation_correct": 0.0,
+    "reasoning": "La respuesta solicita aclaración sobre si se trata de robo/pérdida, movimiento no reconocido, contracargo o consulta, lo cual está respaldado por el uso del formulario para transacciones no reconocidas/contracargos en [5] y los casos de contracargo en [1]. La advertencia de no compartir claves tiene soporte parcial en [4] (no guardar claves), pero la prohibición explícita de compartir números completos de tarjeta o DNI no aparece textualmente en los fragmentos. No se citaron fuentes en la respuesta.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6926,
+    "prompt_tokens": 975,
+    "completion_tokens": 713
+   }
+  }
+ ]
+}
