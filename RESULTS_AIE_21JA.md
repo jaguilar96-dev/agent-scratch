@@ -110,3 +110,31 @@ Resumen de 33 casos (juez azure_evaluation):
   fugas de datos personales: 0   citas de fuentes prohibidas: 1
   tokens: 31191 de entrada, 17916 de salida
 Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261113-085356.json
+
+## Sesión 6 — Tools del MCP en el chat
+
+Dominio: `<dominio>`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y, si ya tienes `MCP_URL`, el compartido (`bank-mcp`).
+
+### Tools de tu dominio
+
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | block_card, file_claim, get_claim_status, get_transactions |
+| Compartido | pendiente |
+
+### Conversación en `dev/chat.py` (paso 12)
+
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece → get_transactions | Mensaje clasificado como sensitive_actions | 10573 / 9241 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. | Mantuvo sensitive_actions | 15475 / 16682 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como out_of_scope | 11691 / 11547 |
+| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. | — |
+
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
+
+No
+
+### Conclusión
+
+El MCP local publicó correctamente las cuatro herramientas de fraud y el agente respondió de forma adecuada. Sin embargo, no se pudo comprobar la ejecución de las herramientas ni el registro de un reclamo. Queda pendiente probar la consulta de movimientos, el registro de un reclamo y la conexión con otras herramientas del MCP compartido.
