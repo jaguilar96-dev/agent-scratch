@@ -69,3 +69,44 @@ Revisando las latencias registradas en los reportes de evaluación (`data/eval/`
 *(Como referencia comparativa con las corridas anteriores de 31 casos: chunks 800 tardó 179.12 s, top_k=3 tardó 155.14 s, top_k=8 tardó 162.95 s y base local tardó 159.20 s).*
 
 
+
+## Sesión 6 — Tools del MCP en el chat
+
+Dominio: `fraud`. MCP: `http://127.0.0.1:8200/mcp`.
+
+Resultados transcritos de las ejecuciones de `uv run python dev/mcp/mcp_tools.py` y `uv run python dev/chat.py` compartidas en el chat. La conversación contiene tres turnos consecutivos. Los tiempos corresponden al primer texto y a la respuesta completa, según la consola.
+
+### Tools de tu dominio
+
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | **4 herramientas:** `block_card(card_id, reason)` y `file_claim(customer_id, transaction_id, reason)`, acciones sensibles. `get_claim_status(claim_id)` y `get_transactions(customer_id, limit)`, consultas. |
+| Compartido | No ejecutado en la evidencia proporcionada. La única salida de descubrimiento corresponde al MCP local en `http://127.0.0.1:8200/mcp`. |
+
+El contrato local indica que `limit` es opcional en `get_transactions`, con valor predeterminado de 10 y rango de 1 a 50. El descubrimiento confirma las herramientas disponibles, pero no demuestra su ejecución durante la conversación.
+
+### Conversación en `dev/chat.py` (paso 12)
+
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece `→ get_transactions`. | Clasificó el mensaje como `sensitive_action`. Pidió autorización para consultar movimientos e identificar el cargo. Solicitó fecha, monto y comercio. Citó `chargeback-form.md` y `unrecognized-charges-procedure.md`. No mostró movimientos. | 9273 / 9559 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. No aparece `→ file_claim`. | Mantuvo `sensitive_action`. Pidió el ID de la operación o fecha, monto y comercio. Volvió a ofrecer la consulta de movimientos. Indicó que el reclamo quedaría pendiente de aprobación de un asesor. No mostró un ID de reclamo ni un registro confirmado. | 13962 / 14214 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como `out_of_scope`. Explicó que no podía consultar saldos. Remitió a la app, banca por internet o al (01) 555-0200. Citó `service-channels.html`. | 10721 / 10856 |
+| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. La consulta de saldo no demuestra el uso ni el rechazo de una herramienta disponible en otro dominio. | — |
+
+La primera fila conserva el nombre de la prueba de la plantilla. El mensaje real recibió `sensitive_action`, por lo que no verifica una consulta clasificada como `data_query`. La segunda fila registra la confirmación verbal del cliente, pero no acredita la ejecución de la acción.
+
+| **Turno** | **Tokens de entrada** | **Tokens de salida** |
+| :--- | ---: | ---: |
+| Cargo duplicado | 1499 | 911 |
+| Confirmación del reclamo | 1906 | 1395 |
+| Consulta de saldo | 2054 | 1078 |
+| **Total de los tres turnos** | **5459** | **3384** |
+
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
+
+Nop
+
+### Conclusión
+
+El servidor MCP local expuso las cuatro herramientas correspondientes a fraud. Durante el flujo de la conversación se registraron dos respuestas de tipo sensitive_action y una out_of_scope; el agente solicitó la información requerida para identificar la transacción y denegó la consulta de saldo evitando alucinar o inventar el monto.
