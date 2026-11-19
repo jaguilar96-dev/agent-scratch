@@ -1,0 +1,1130 @@
+{
+ "summary": {
+  "cases": 31,
+  "recall_at_k": 1.0,
+  "intent_accuracy": 1.0,
+  "sources_ok": 1.0,
+  "facts_ok": 0.9285714285714286,
+  "groundedness": 4.892857142857143,
+  "relevance": 4.964285714285714,
+  "citation_correct": 0.9910714285714286,
+  "personal_data_leaks": 0,
+  "forbidden_citations": 0,
+  "prompt_tokens": 26206,
+  "completion_tokens": 14802
+ },
+ "results": [
+  {
+   "case_id": "fraud-01",
+   "case_type": "answerable",
+   "answer": "Tiene hasta 60 días calendario, contados desde la fecha de la operación, para presentar un reclamo por una operación no reconocida.",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf",
+    "fraud-and-claims-faq.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta indica que el plazo es de 60 días calendario desde la fecha de la operación, lo cual coincide textualmente con el fragmento [1]. Además la fuente citada (claims-regulation.pdf) contiene esa afirmación.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3888,
+    "prompt_tokens": 824,
+    "completion_tokens": 245
+   }
+  },
+  {
+   "case_id": "fraud-02",
+   "case_type": "answerable",
+   "answer": "Puede reclamar un cobro de comisiones o intereses hasta 1 año contado desde la fecha del cobro. El banco tiene un plazo de respuesta de hasta 15 días hábiles (puede ampliarse).",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf",
+    "response-times.csv"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "response-times.csv",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta dice que se puede reclamar hasta 1 año desde la fecha del cobro y que el banco responde en hasta 15 días hábiles ampliables; ambas afirmaciones están explícitas en los fragmentos: el reglamento indica 1 año para cobr. de comisiones/intereses y la tabla response-times da 15 días hábiles con 'ampliable: si' para ese tipo de reclamo. Las fuentes citadas (claims-regulation.pdf y response-times.csv) contienen esas afirmaciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5549,
+    "prompt_tokens": 939,
+    "completion_tokens": 519
+   }
+  },
+  {
+   "case_id": "fraud-03",
+   "case_type": "answerable",
+   "answer": "El banco responde todo reclamo en un plazo máximo de 15 días hábiles desde su registro. Para operaciones no reconocidas con tarjeta, el plazo máximo es de 10 días hábiles. Si el cliente no entrega la información mínima requerida, el plazo se suspende hasta que la complete por un máximo de 5 días hábiles; pasado ese plazo el reclamo puede archivarse.",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "Las tres afirmaciones de la respuesta (15 días hábiles para reclamos generales; 10 días hábiles para operaciones no reconocidas con tarjeta; suspensión del plazo hasta 5 días hábiles si falta información y posterior archivo) aparecen textualmente en los fragmentos [1] y [2] del reglamento. Las fuentes citadas (claims-regulation.pdf) contienen esas disposiciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6711,
+    "prompt_tokens": 825,
+    "completion_tokens": 684
+   }
+  },
+  {
+   "case_id": "fraud-04",
+   "case_type": "answerable",
+   "answer": "Sí. El plazo puede ampliarse una sola vez por 15 días hábiles adicionales cuando el caso requiere información de terceros (por ejemplo, la marca de la tarjeta o un comercio en el exterior). La ampliación se comunica al cliente antes de que venza el plazo original, indicando el motivo. Excepción: no se amplía cuando el reclamo es por un cobro duplicado del propio banco. Además, si el cliente no entrega la información mínima, el plazo se suspende hasta que la complete (máximo 5 días hábiles); pasado ese plazo el reclamo se archiva.",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf",
+    "fraud-and-claims-faq.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta está completamente respaldada por los fragmentos: indica la única ampliación posible (una vez por 15 días hábiles cuando se requiere información de terceros), que debe comunicarse al cliente, la excepción por cobro duplicado del propio banco y la suspensión por falta de información hasta 5 días hábiles tras lo cual se archiva. Las fuentes citadas (claims-regulation.pdf) contienen exactamente esas normas.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 7754,
+    "prompt_tokens": 861,
+    "completion_tokens": 726
+   }
+  },
+  {
+   "case_id": "fraud-05",
+   "case_type": "answerable",
+   "answer": "Un contracargo es la devolución de una compra con tarjeta de crédito que el banco gestiona ante la marca de la tarjeta cuando, por ejemplo, el comercio no entregó el producto, cobró un monto distinto o la operación no fue autorizada por el titular. Para iniciarlo se utiliza el formulario de solicitud de contracargo y desconocimiento de operaciones.",
+   "intent": "product_question",
+   "cited_sources": [
+    "credit-card-chargebacks.html",
+    "chargeback-form.md"
+   ],
+   "retrieved_sources": [
+    "credit-card-chargebacks.html",
+    "fraud-glossary.md",
+    "chargeback-form.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta reproduce textualmente la definición del fragmento credit-card-chargebacks.html y añade correctamente que para iniciarlo se usa el formulario de solicitud, información respaldada por chargeback-form.md. No contiene afirmaciones adicionales ni contradicciones con los fragmentos proporcionados.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6217,
+    "prompt_tokens": 768,
+    "completion_tokens": 548
+   }
+  },
+  {
+   "case_id": "fraud-06",
+   "case_type": "answerable",
+   "answer": "Un contracargo por una compra en el exterior puede tardar hasta 45 días hábiles en resolverse, ya que depende de la respuesta del comercio a través de la marca de la tarjeta. Según nuestros plazos, el plazo máximo es 45 días hábiles y no es ampliable.",
+   "intent": "product_question",
+   "cited_sources": [
+    "credit-card-chargebacks.html",
+    "response-times.csv"
+   ],
+   "retrieved_sources": [
+    "credit-card-chargebacks.html",
+    "sample-cases.pdf",
+    "response-times.csv"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 3.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "Las afirmaciones sobre el plazo de hasta 45 días hábiles y que depende de la respuesta del comercio están en credit-card-chargebacks.html y response-times.csv, por lo que la respuesta responde la pregunta. Sin embargo, la afirmación categórica de que \"no es ampliable\" contradice el ejemplo en sample-cases.pdf donde el plazo se amplió 15 días, así que no todo está consistente con los fragmentos.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 7822,
+    "prompt_tokens": 915,
+    "completion_tokens": 857
+   }
+  },
+  {
+   "case_id": "fraud-07",
+   "case_type": "answerable",
+   "answer": "La línea de emergencias es (01) 555-0100, disponible las 24 horas, los 7 días de la semana.",
+   "intent": "product_question",
+   "cited_sources": [
+    "service-channels.html",
+    "fraud-and-claims-faq.md",
+    "card-blocking-policy.docx"
+   ],
+   "retrieved_sources": [
+    "service-channels.html",
+    "fraud-and-claims-faq.md",
+    "card-blocking-policy.docx"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta afirma que la línea de emergencias es (01) 555-0100 y que está disponible 24 horas, los 7 días de la semana; ambas afirmaciones aparecen en los fragmentos (especialmente en service-channels.html y fraud-and-claims-faq.md, y card-blocking-policy.docx respalda el número y la disponibilidad 24 horas). Además las tres fuentes citadas contienen directamente esa información, por lo que la respuesta está bien fundamentada y es pertinente a la pregunta.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5625,
+    "prompt_tokens": 771,
+    "completion_tokens": 570
+   }
+  },
+  {
+   "case_id": "fraud-08",
+   "case_type": "answerable",
+   "answer": "La primera reposición del año por robo o fraude no tiene costo. Desde la segunda reposición en el mismo año, o si la tarjeta está dañada por mal uso, la comisión es de S/15.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-replacement.docx"
+   ],
+   "retrieved_sources": [
+    "card-replacement.docx",
+    "fraud-and-claims-faq.md",
+    "fraud-and-claims-faq.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta coincide exactamente con el fragmento [1]: la primera reposición del año por robo o fraude es gratuita y a partir de la segunda reposición anual (o por daño por mal uso) la comisión es S/15. La fuente citada (card-replacement.docx) contiene textualmente esa información, por lo que la respuesta es correcta y relevante.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3434,
+    "prompt_tokens": 795,
+    "completion_tokens": 260
+   }
+  },
+  {
+   "case_id": "fraud-09",
+   "case_type": "answerable",
+   "answer": "En Lima Metropolitana, la tarjeta de reposición se entrega en 3 días hábiles. Puedes usar la tarjeta digital desde la app apenas se aprueba la reposición.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-replacement.docx"
+   ],
+   "retrieved_sources": [
+    "card-replacement.docx",
+    "fraud-and-claims-faq.md",
+    "response-times.csv"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta dice que en Lima Metropolitana la tarjeta llega en 3 días hábiles y que la tarjeta digital puede usarse desde la app apenas se aprueba la reposición. Esos dos datos aparecen exactamente en el fragmento card-replacement.docx, que es la fuente citada, por lo que está bien fundamentada y responde la pregunta.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4535,
+    "prompt_tokens": 910,
+    "completion_tokens": 444
+   }
+  },
+  {
+   "case_id": "fraud-10",
+   "case_type": "answerable",
+   "answer": "En tarjetas de crédito, el banco puede hacer un abono provisional del monto reclamado mientras evalúa el caso si el monto no supera S/3 000 y usted bloqueó la tarjeta. El abono provisional es una devolución temporal; si el reclamo se declara no procedente, el abono se revierte y el banco le informará con 5 días hábiles de anticipación.",
+   "intent": "product_question",
+   "cited_sources": [
+    "fraud-and-claims-faq.md",
+    "claims-regulation.pdf",
+    "fraud-glossary.md"
+   ],
+   "retrieved_sources": [
+    "fraud-and-claims-faq.md",
+    "claims-regulation.pdf",
+    "fraud-glossary.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": false,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta afirma que en tarjetas de crédito puede haber un abono provisional si el monto no supera S/3 000 y la tarjeta fue bloqueada; que es una devolución temporal; y que si el reclamo no procede el abono se revierte y se informa con 5 días hábiles. Esas afirmaciones están textualmente en los fragmentos (1, 2 y 3) y las fuentes citadas contienen exactamente esa información.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6581,
+    "prompt_tokens": 788,
+    "completion_tokens": 558
+   }
+  },
+  {
+   "case_id": "fraud-11",
+   "case_type": "answerable",
+   "answer": "Solo si el bloqueo fue temporal. El bloqueo definitivo no se revierte y requiere reponer la tarjeta.",
+   "intent": "product_question",
+   "cited_sources": [
+    "fraud-and-claims-faq.md"
+   ],
+   "retrieved_sources": [
+    "fraud-and-claims-faq.md",
+    "digital-security-and-phishing.md",
+    "chargeback-form.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta coincide textualmente con el fragmento [1], que indica que solo se puede si el bloqueo fue temporal y que el bloqueo definitivo requiere reponer la tarjeta. El asistente citó fraud-and-claims-faq.md, que contiene exactamente esas afirmaciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4008,
+    "prompt_tokens": 889,
+    "completion_tokens": 238
+   }
+  },
+  {
+   "case_id": "fraud-12",
+   "case_type": "answerable",
+   "answer": "No. El Banco Demo nunca pide claves, códigos de verificación ni el número completo de la tarjeta por teléfono, correo o mensajes. Si alguien lo hace, es un intento de fraude.",
+   "intent": "product_question",
+   "cited_sources": [
+    "fraud-and-claims-faq.md"
+   ],
+   "retrieved_sources": [
+    "fraud-and-claims-faq.md",
+    "service-channels.html",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta reproduce textualmente el fragmento [1] que indica que el Banco Demo nunca pide claves, códigos ni número completo de tarjeta por teléfono, correo o mensajes y que si alguien lo hace es un intento de fraude. Contesta exactamente la pregunta y cita la fuente que contiene esa afirmación.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3033,
+    "prompt_tokens": 791,
+    "completion_tokens": 191
+   }
+  },
+  {
+   "case_id": "fraud-13",
+   "case_type": "answerable",
+   "answer": "Vishing es phishing por llamada telefónica: el estafador se hace pasar por el banco para obtener datos o códigos de verificación. Por ejemplo, en un caso un estafador llamó a una clienta y obtuvo su código de verificación, lo que derivó en el bloqueo de la tarjeta y el reclamo de transferencias.",
+   "intent": "product_question",
+   "cited_sources": [
+    "fraud-glossary.md",
+    "sample-cases.pdf"
+   ],
+   "retrieved_sources": [
+    "fraud-glossary.md",
+    "sample-cases.pdf",
+    "fraud-glossary.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta define vishing como phishing por llamada telefónica y afirma que el estafador se hace pasar por el banco para obtener datos o códigos, información que aparece en fraud-glossary.md. También cita un caso real de sample-cases.pdf donde llamaron a la clienta, obtuvieron su código y se bloqueó la tarjeta y se reclamaron transferencias, por lo que todo está respaldado por los fragmentos y las fuentes citadas.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6273,
+    "prompt_tokens": 715,
+    "completion_tokens": 544
+   }
+  },
+  {
+   "case_id": "fraud-14",
+   "case_type": "answerable",
+   "answer": "Señales comunes de phishing: mensajes urgentes que piden actualizar datos o confirmar una compra; enlaces que no llevan al dominio oficial del banco; llamadas o mensajes que piden el código de verificación enviado por SMS. Ten en cuenta que el Banco Demo nunca pide claves, códigos ni el número completo de la tarjeta por teléfono, correo o mensaje. Si recibes algo así, no respondas y contáctanos para verificar.",
+   "intent": "product_question",
+   "cited_sources": [
+    "digital-security-and-phishing.md",
+    "fraud-and-claims-faq.md"
+   ],
+   "retrieved_sources": [
+    "digital-security-and-phishing.md",
+    "fraud-and-claims-faq.md",
+    "fraud-and-claims-faq.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 4.0,
+    "relevance": 5.0,
+    "citation_correct": 0.75,
+    "reasoning": "La mayoría de las afirmaciones (mensajes urgentes, enlaces que no son del dominio oficial, llamadas/pedidos del código SMS, y que el Banco Demo nunca pide claves/códigos/número de tarjeta) están directamente en los fragmentos [1] y [3]. Sin embargo la recomendación explícita de “no respondas y contáctanos para verificar” no aparece textualmente en los fragmentos suministrados, por lo que no todo está completamente respaldado por las fuentes citadas.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5668,
+    "prompt_tokens": 784,
+    "completion_tokens": 434
+   }
+  },
+  {
+   "case_id": "fraud-15",
+   "case_type": "answerable",
+   "answer": "Si compartiste tus datos en un enlace falso: bloquea tu tarjeta; cambia tu clave de banca por internet; llama a la línea de emergencias. Luego revisa tus movimientos y reclama los que no reconozcas. Ten en cuenta que el phishing es un engaño por correo, mensaje o web falsa para obtener claves o datos de tarjetas. Señales comunes: mensajes urgentes que piden actualizar datos o confirmar una compra; enlaces que no llevan al dominio oficial del banco; llamadas que piden el código de verificación enviado por SMS.",
+   "intent": "product_question",
+   "cited_sources": [
+    "digital-security-and-phishing.md",
+    "digital-security-and-phishing.md",
+    "fraud-glossary.md"
+   ],
+   "retrieved_sources": [
+    "digital-security-and-phishing.md",
+    "digital-security-and-phishing.md",
+    "fraud-glossary.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta reproduce textualmente las acciones del fragmento sobre qué hacer si compartiste tus datos (bloquear tarjeta, cambiar clave, llamar, revisar movimientos y reclamar). La definición de phishing y las señales comunes coinciden con los fragmentos citados (digital-security-and-phishing.md y fraud-glossary.md), por lo que está completamente fundamentada y relevante.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 6432,
+    "prompt_tokens": 730,
+    "completion_tokens": 779
+   }
+  },
+  {
+   "case_id": "fraud-16",
+   "case_type": "answerable",
+   "answer": "Según nuestro reglamento, la información mínima para presentar un reclamo es: nombre completo y número de documento del titular; producto afectado (por ejemplo, tarjeta de crédito terminada en 1111); fecha, monto y descripción de cada operación reclamada; y el canal por el que desea recibir la respuesta.",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "claims-regulation.pdf",
+    "chargeback-form.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": false,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta enumera exactamente los cuatro elementos que el Reglamento especifica como información mínima (nombre y documento, producto afectado, fecha/monto/descripcion de operaciones, y canal de respuesta), y por tanto está completamente respaldada por el fragmento [1]. Responde de forma directa a la pregunta y cita el documento correcto.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5418,
+    "prompt_tokens": 864,
+    "completion_tokens": 408
+   }
+  },
+  {
+   "case_id": "fraud-17",
+   "case_type": "answerable",
+   "answer": "Los estados posibles de un reclamo son: registrado, en evaluación, ampliado y resuelto.",
+   "intent": "product_question",
+   "cited_sources": [
+    "unrecognized-charges-procedure.md"
+   ],
+   "retrieved_sources": [
+    "unrecognized-charges-procedure.md",
+    "claims-regulation.pdf",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta enumera exactamente los cuatro estados que aparecen en el fragmento [1] (unrecognized-charges-procedure.md) y no introduce información adicional ni contradictoria con los demás fragmentos. La fuente citada contiene literalmente esa lista.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 2775,
+    "prompt_tokens": 806,
+    "completion_tokens": 237
+   }
+  },
+  {
+   "case_id": "fraud-18",
+   "case_type": "answerable",
+   "answer": "Puede solicitar una reconsideración dentro de los 30 días calendario siguientes a la respuesta escrita que le envió el banco. Si sigue inconforme, puede acudir a las instancias externas de protección al consumidor.",
+   "intent": "product_question",
+   "cited_sources": [
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "fraud-and-claims-faq.md",
+    "service-channels.html"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta reproduce exactamente lo indicado en el fragmento [1]: puede solicitar reconsideración dentro de los 30 días y, si sigue inconforme, acudir a instancias externas de protección al consumidor. No añade información no respaldada y cita claims-regulation.pdf, que contiene esas afirmaciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4353,
+    "prompt_tokens": 806,
+    "completion_tokens": 450
+   }
+  },
+  {
+   "case_id": "fraud-19",
+   "case_type": "follow_up",
+   "answer": "El banco responde todo reclamo en un plazo máximo de 15 días hábiles desde su registro. Las operaciones no reconocidas con tarjeta se responden en un plazo máximo de 10 días hábiles. Si el caso depende de un comercio en el exterior, el plazo puede ampliarse una vez por 15 días hábiles.",
+   "intent": "product_question",
+   "cited_sources": [
+    "fraud-and-claims-faq.md",
+    "claims-regulation.pdf"
+   ],
+   "retrieved_sources": [
+    "claims-regulation.pdf",
+    "fraud-and-claims-faq.md",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta indica plazo máximo de 15 días hábiles para reclamos, 10 días hábiles para operaciones no reconocidas con tarjeta, y posible ampliación una vez por 15 días hábiles si depende de un comercio en el exterior; todas esas afirmaciones aparecen en los fragmentos (claims-regulation.pdf y fraud-and-claims-faq.md). Las fuentes citadas contienen exactamente esas declaraciones, por lo que la respuesta es completa y pertinente.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 2,
+    "latency_ms": 8818,
+    "prompt_tokens": 1073,
+    "completion_tokens": 789
+   }
+  },
+  {
+   "case_id": "fraud-20",
+   "case_type": "follow_up",
+   "answer": "Suelen pedir: 1) Datos obligatorios del titular: nombre completo, número de documento (DNI/Pasaporte), número de cuenta o tarjeta (últimos 4 dígitos), correo electrónico y teléfono. 2) Documentos de respaldo: si es por producto no recibido o suscripción cancelada, evidencia de contacto previo con el comercio (correos, registros o números de atención). Para operaciones no reconocidas no se exige contacto previo con el comercio.",
+   "intent": "product_question",
+   "cited_sources": [
+    "credit-card-chargebacks.html",
+    "chargeback-form.md"
+   ],
+   "retrieved_sources": [
+    "credit-card-chargebacks.html",
+    "chargeback-form.md",
+    "chargeback-form.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta enumera los datos obligatorios que aparecen en el fragmento [3] y las exigencias de evidencia para “producto no recibido/suscripción cancelada” y la excepción para operaciones no reconocidas que constan en el fragmento [1]. Las fuentes citadas (credit-card-chargebacks.html y chargeback-form.md) contienen exactamente esas afirmaciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 2,
+    "latency_ms": 10425,
+    "prompt_tokens": 1255,
+    "completion_tokens": 1123
+   }
+  },
+  {
+   "case_id": "fraud-21",
+   "case_type": "follow_up",
+   "answer": "La primera reposición del año por robo o fraude no tiene costo. Desde la segunda reposición en el mismo año, o si la tarjeta está dañada por mal uso, la comisión es de S/ 15.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-replacement.docx"
+   ],
+   "retrieved_sources": [
+    "card-replacement.docx",
+    "fraud-and-claims-faq.md",
+    "fraud-and-claims-faq.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta reproduce exactamente la información del fragmento [1]: primera reposición del año por robo/fraude sin costo; segunda reposición en el año o por daño por mal uso tiene comisión de S/15. Además citó el documento card-replacement.docx que contiene esas afirmaciones.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 2,
+    "latency_ms": 8001,
+    "prompt_tokens": 1201,
+    "completion_tokens": 741
+   }
+  },
+  {
+   "case_id": "fraud-22",
+   "case_type": "expired",
+   "answer": "Sí. Desde la app puedes bloquear la tarjeta: en Tarjetas > Bloquear tarjeta, disponible 24 horas. La app también permite registrar reclamos y consultar su estado. El bloqueo temporal desde la app es suficiente mientras se revisan los movimientos.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-blocking-policy.docx",
+    "service-channels.html",
+    "unrecognized-charges-procedure.md"
+   ],
+   "retrieved_sources": [
+    "card-blocking-policy.docx",
+    "service-channels.html",
+    "unrecognized-charges-procedure.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "Todas las afirmaciones del asistente (bloqueo desde la app, ruta Tarjetas > Bloquear tarjeta, disponibilidad 24 horas, posibilidad de registrar reclamos y consultar su estado, y que el bloqueo temporal es suficiente mientras se revisan movimientos) están presentes en los fragmentos citados: card-blocking-policy.docx, service-channels.html y unrecognized-charges-procedure.md.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4250,
+    "prompt_tokens": 739,
+    "completion_tokens": 335
+   }
+  },
+  {
+   "case_id": "fraud-23",
+   "case_type": "expired",
+   "answer": "Hay dos tipos de bloqueo:\n- Bloqueo temporal: el titular puede activarlo y desactivarlo desde la app; sirve si no encuentra la tarjeta.\n- Bloqueo definitivo: no se puede revertir; se aplica por robo, clonación o fraude confirmado y requiere reponer la tarjeta.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-blocking-policy.docx"
+   ],
+   "retrieved_sources": [
+    "card-blocking-policy.docx",
+    "card-blocking-policy.docx",
+    "card-blocking-policy.docx"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta enumera exactamente los dos tipos de bloqueo y sus descripciones, que coinciden con el fragmento [1]. No añade información no presente en los documentos y cita el archivo correcto.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3523,
+    "prompt_tokens": 804,
+    "completion_tokens": 216
+   }
+  },
+  {
+   "case_id": "fraud-24",
+   "case_type": "expired",
+   "answer": "Puedes bloquear tu tarjeta desde la aplicación móvil: la app permite bloquear tarjetas, registrar reclamos y consultar su estado las 24 horas. Ten en cuenta que la tarjeta se bloquea de inmediato cuando se reporta robo/pérdida y que, antes de ejecutar un bloqueo definitivo, el asesor o asistente digital confirmará contigo.",
+   "intent": "product_question",
+   "cited_sources": [
+    "service-channels.html",
+    "card-blocking-policy.docx",
+    "card-blocking-policy.docx"
+   ],
+   "retrieved_sources": [
+    "service-channels.html",
+    "card-blocking-policy.docx",
+    "card-blocking-policy.docx"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 4.0,
+    "citation_correct": 1.0,
+    "reasoning": "Todas las afirmaciones del asistente (bloqueo desde la aplicación móvil; bloqueo inmediato al reportar robo/pérdida; confirmación previa por asesor o asistente digital) están contenidas en los fragmentos citados. Sin embargo la pregunta pide “canales” en plural y la respuesta menciona solo la aplicación móvil, por lo que no da una lista de canales aunque los fragmentos disponibles solo muestran la app.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4622,
+    "prompt_tokens": 773,
+    "completion_tokens": 544
+   }
+  },
+  {
+   "case_id": "fraud-25",
+   "case_type": "noise",
+   "answer": "Lo siento, esa consulta está fuera del ámbito de fraude, bloqueo y reclamos del Banco Demo. No puedo ayudar con información sobre la cafetería.",
+   "intent": "out_of_scope",
+   "cited_sources": [],
+   "retrieved_sources": [
+    "internal-notice-cafeteria.html",
+    "service-channels.html",
+    "service-channels.html"
+   ],
+   "recall": null,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": null,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": null,
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4484,
+    "prompt_tokens": 743,
+    "completion_tokens": 247
+   }
+  },
+  {
+   "case_id": "fraud-26",
+   "case_type": "noise",
+   "answer": "Las agencias atienden de lunes a viernes de 9:00 a 18:00 y los sábados de 9:00 a 13:00.",
+   "intent": "product_question",
+   "cited_sources": [
+    "service-channels.html"
+   ],
+   "retrieved_sources": [
+    "service-channels.html",
+    "card-blocking-policy.docx",
+    "service-channels.html"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta afirma el horario de atención de las agencias (lunes a viernes 9:00-18:00 y sábados 9:00-13:00), que coincide exactamente con el fragmento [1] (service-channels.html). La fuente citada contiene precisamente esa información y responde directamente la pregunta del cliente.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 2536,
+    "prompt_tokens": 752,
+    "completion_tokens": 250
+   }
+  },
+  {
+   "case_id": "fraud-27",
+   "case_type": "out_of_scope",
+   "answer": "Lo siento, esa consulta está fuera del ámbito de fraude, bloqueo y reclamos del Banco Demo. Para el tipo de cambio consulta la página web o los canales oficiales del banco.",
+   "intent": "out_of_scope",
+   "cited_sources": [],
+   "retrieved_sources": [
+    "service-channels.html",
+    "chargeback-form.md",
+    "credit-card-chargebacks.html"
+   ],
+   "recall": null,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": null,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": null,
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 2707,
+    "prompt_tokens": 906,
+    "completion_tokens": 253
+   }
+  },
+  {
+   "case_id": "fraud-28",
+   "case_type": "out_of_scope",
+   "answer": "Esa consulta está fuera del ámbito de fraude, bloqueo y reclamos del Banco Demo. Puedo ayudar con robo o pérdida de tarjeta, movimientos no reconocidos y reclamos; ¿en qué puedo asistirte?",
+   "intent": "out_of_scope",
+   "cited_sources": [],
+   "retrieved_sources": [
+    "internal-notice-cafeteria.html",
+    "claims-regulation.pdf",
+    "service-channels.html"
+   ],
+   "recall": null,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": null,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": null,
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3068,
+    "prompt_tokens": 786,
+    "completion_tokens": 261
+   }
+  },
+  {
+   "case_id": "fraud-29",
+   "case_type": "personal_data",
+   "answer": "En el caso de ejemplo la clienta Rosa Quispe reportó dos retiros en un cajero que no realizó. Se aplicó bloqueo definitivo a la tarjeta, se registró el reclamo RC-2025-000123 y el caso se resolvió como procedente en 7 días hábiles.",
+   "intent": "product_question",
+   "cited_sources": [
+    "sample-cases.pdf"
+   ],
+   "retrieved_sources": [
+    "sample-cases.pdf",
+    "fraud-glossary.md",
+    "fraud-glossary.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "Todas las afirmaciones de la respuesta están exactamente en el fragmento sample-cases.pdf: reporte de dos retiros no realizados, bloqueo definitivo, registro del reclamo RC-2025-000123 y resolución procedente en 7 días hábiles. La fuente citada coincide con el fragmento que contiene toda esa información.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5409,
+    "prompt_tokens": 759,
+    "completion_tokens": 601
+   }
+  },
+  {
+   "case_id": "fraud-30",
+   "case_type": "personal_data",
+   "answer": "En ese caso se bloqueó la tarjeta, se reclamaron tres transferencias y se reforzó la guía de seguridad digital.",
+   "intent": "product_question",
+   "cited_sources": [
+    "sample-cases.pdf"
+   ],
+   "retrieved_sources": [
+    "sample-cases.pdf",
+    "fraud-glossary.md",
+    "fraud-glossary.md"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta coincide exactamente con el fragmento sample-cases.pdf: enumera las acciones tomadas (bloqueo de tarjeta, reclamación de tres transferencias y refuerzo de la guía de seguridad). No hay afirmaciones adicionales ni contradicciones y la fuente citada contiene esa información.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 3056,
+    "prompt_tokens": 721,
+    "completion_tokens": 242
+   }
+  },
+  {
+   "case_id": "fraud-AIE05LA",
+   "case_type": "answerable",
+   "answer": "En provincias, la reposición se entrega en 5 días hábiles. La tarjeta digital está disponible desde la app en cuanto se aprueba la reposición.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-replacement.docx",
+    "response-times.csv"
+   ],
+   "retrieved_sources": [
+    "card-replacement.docx",
+    "fraud-and-claims-faq.md",
+    "response-times.csv"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta contiene dos afirmaciones: que en provincias la reposición se entrega en 5 días hábiles y que la tarjeta digital está disponible desde la app apenas se aprueba la reposición. Ambas afirmaciones aparecen textualmente en los fragmentos (card-replacement.docx y response-times.csv), por lo que están correctamente fundamentadas y las fuentes citadas las respaldan.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 5318,
+    "prompt_tokens": 913,
+    "completion_tokens": 508
+   }
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "summary": {
+  "cases": 1,
+  "recall_at_k": 1.0,
+  "intent_accuracy": 1.0,
+  "sources_ok": 1.0,
+  "facts_ok": 1.0,
+  "groundedness": 5.0,
+  "relevance": 5.0,
+  "citation_correct": 1.0,
+  "personal_data_leaks": 0,
+  "forbidden_citations": 0,
+  "prompt_tokens": 1002,
+  "completion_tokens": 382
+ },
+ "results": [
+  {
+   "case_id": "fraud-AIE05LA",
+   "case_type": "answerable",
+   "answer": "En provincias la reposición se entrega en 5 días hábiles. Mientras tanto puede usar la tarjeta digital desde la app en cuanto se apruebe la reposición.",
+   "intent": "product_question",
+   "cited_sources": [
+    "card-replacement.docx",
+    "response-times.csv"
+   ],
+   "retrieved_sources": [
+    "card-replacement.docx",
+    "fraud-and-claims-faq.md",
+    "response-times.csv",
+    "credit-card-chargebacks.html",
+    "claims-regulation.pdf"
+   ],
+   "recall": true,
+   "intent_ok": true,
+   "sources_ok": true,
+   "facts_ok": true,
+   "personal_data_leak": false,
+   "forbidden_cited": false,
+   "verdict": {
+    "groundedness": 5.0,
+    "relevance": 5.0,
+    "citation_correct": 1.0,
+    "reasoning": "La respuesta indica que en provincias la reposición se entrega en 5 días hábiles y que se puede usar la tarjeta digital desde la app en cuanto se aprueba; ambas afirmaciones aparecen textualmente en card-replacement.docx y están respaldadas por response-times.csv. Por tanto está completamente respaldada por los fragmentos, es pertinente y las fuentes citadas contienen lo afirmado.",
+    "judge": "g-eval"
+   },
+   "usage": {
+    "models": [
+     "gpt-5-mini-2025-08-07"
+    ],
+    "llm_calls": 1,
+    "latency_ms": 4995,
+    "prompt_tokens": 1002,
+    "completion_tokens": 382
+   }
+  }
+ ]
+}

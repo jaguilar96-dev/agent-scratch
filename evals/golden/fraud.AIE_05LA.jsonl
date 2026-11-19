@@ -1,1 +1,1 @@
-{"id": "fraud-AIE05LA", "type": "answerable", "history": [], "question": "<tu pregunta>", "expected_intent": "product_question", "expected_sources": ["<documento del corpus>"], "forbidden_sources": [], "key_facts": ["<dato que la respuesta tiene que decir>"]}
+{"id": "fraud-AIE05LA", "type": "answerable", "history": [], "question": "¿En cuántos días hábiles entregan la tarjeta de reposición en provincias?", "expected_intent": "product_question", "expected_sources": ["card-replacement.docx"], "forbidden_sources": [], "key_facts": ["5 días hábiles"]}
