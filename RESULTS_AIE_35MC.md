@@ -467,4 +467,27 @@ El MCP local publicó las cuatro herramientas de `fraud`. La conversación mostr
 
 **La prueba no demuestra la ejecución de herramientas MCP ni el registro de un reclamo.** El agente pidió permiso para consultar movimientos, aunque el contrato identifica `get_transactions` como consulta. Incluso después de la confirmación verbal, el flujo no avanzó hasta mostrar movimientos o preparar una acción sobre una transacción identificada.
 
-Para completar la verificación funcional, faltan una consulta que produzca `→ get_transactions` y un resultado, y una solicitud de reclamo con `transaction_id` conocido. También faltan el descubrimiento del MCP compartido y la prueba de una herramienta de otro dominio. Esas ejecuciones no forman parte de los resultados disponibles.
+## Sesión 7 — Skills, memoria de trabajo y Agent Framework
+
+Dominio: `fraud`. La misma conversación con los dos runtimes (paso 7).
+
+| | `react` | `agent_framework` |
+|---|---|---|
+| Tools pedidas en la consulta | _(anotar)_ | _(anotar)_ |
+| La acción sensible quedó **NO SE EJECUTA** | _(anotar)_ | _(anotar)_ |
+| Pregunta de memoria respondida sin `→` | _(anotar)_ | _(anotar)_ |
+| Primer texto (ms) | _(anotar)_ | _(anotar)_ |
+| Respuesta completa (ms) | _(anotar)_ | _(anotar)_ |
+| Tokens (entrada / salida) | _(anotar)_ | _(anotar)_ |
+
+### ¿La skill frenó la tool de otro dominio?
+
+Mensaje: _(anotar)_. Respuesta: _(anotar)_.
+
+### Diferencias entre los dos runtimes
+
+_(anotar)_
+
+### Conclusión
+
+_(anotar)_
