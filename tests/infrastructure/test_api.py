@@ -21,6 +21,7 @@ from agent.infrastructure.config.settings import FoundrySettings, Settings
 
 
 def make_client(chat_model, chunks: list[Chunk] | None = None, tools: FakeTools | None = None) -> TestClient:
+    # el dominio de FakeTools: la skill de fees deja pasar sus tools
     settings = Settings(_env_file=None, domain="fees", foundry=FoundrySettings(_env_file=None, auth_provider="api_key"))
     app = create_app(chat_model=chat_model, settings=settings, embedder=FakeEmbedder(),
                      knowledge_base=FakeKnowledgeBase(chunks), tools=tools or FakeTools([]))

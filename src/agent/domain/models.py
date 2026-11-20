@@ -142,6 +142,9 @@ class AnswerDelta(BaseModel):
 
     text: str
 
+
+# lo que entrega ChatModel.stream; el último es ModelResult (respondió) o ToolRequest (pidió tools)
+type ModelEvent = IntentDetected | AnswerDelta | ModelResult | ToolRequest
 class Skill(BaseModel):
     """Cómo trabaja el agente en su dominio (S7): instrucciones, las tools que puede usar y cuándo debe parar."""
 
@@ -153,7 +156,5 @@ class Skill(BaseModel):
 
 # lo que entrega AgentRuntime.run: los eventos del modelo y de cada tool; el último es ModelResult, con el consumo total
 type RuntimeEvent = IntentDetected | AnswerDelta | ToolCall | ToolResult | ModelResult
-# lo que entrega ChatModel.stream; el último es ModelResult (respondió) o ToolRequest (pidió tools)
-type ModelEvent = IntentDetected | AnswerDelta | ModelResult | ToolRequest
 # lo que entrega ChatService.handle_stream: cada tool pedida y su resultado, después la respuesta; el último es AgentTurn
 type TurnEvent = IntentDetected | AnswerDelta | ToolCall | ToolResult | AgentTurn
