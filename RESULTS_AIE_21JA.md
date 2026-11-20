@@ -111,29 +111,33 @@ Resumen de 33 casos (juez azure_evaluation):
   tokens: 31191 de entrada, 17916 de salida
 Detalle de cada caso: D:\github\agent-scratch\data\eval\fraud-20261113-085356.json
 
+# S6
 ## Sesión 6 — Tools del MCP en el chat
 
-Dominio: `<dominio>`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y, si ya tienes `MCP_URL`, el compartido (`bank-mcp`).
+Dominio: `fraud`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y, si ya tienes `MCP_URL`, el compartido (`https://ca-mcp-server.icybush-2ea2dfc1.eastus2.azurecontainerapps.io/mcp`).
 
 ### Tools de tu dominio
 
 | MCP | Tools que lista `dev/mcp/mcp_tools.py` |
 |---|---|
-| Mock | block_card, file_claim, get_claim_status, get_transactions |
-| Compartido | pendiente |
+| Mock | block_card¬ acción sensible¬ card_id, reason ; file_claim¬ acción sensible¬ customer_id, transaction_id, reason ; get_claim_status¬ consulta¬ claim_id ; get_transactions¬ consulta¬ customer_id, limit |
+| Compartido | get_transactions, get_claim_status, block_card, file_claim |
 
 ### Conversación en `dev/chat.py` (paso 12)
 
 | Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
 |---|---|---|---|---|
-| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece → get_transactions | Mensaje clasificado como sensitive_actions | 10573 / 9241 |
-| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. | Mantuvo sensitive_actions | 15475 / 16682 |
-| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como out_of_scope | 11691 / 11547 |
-| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. | — |
+| Consulta de tu dominio | Soy CUS-1001, ¿puedo subir la línea de mi tarjeta CRD-2001 a 4000? | → get_transactions(customer_id=CUS-1001, limit=10) | La respuesta se clasifica como sensitive_action, el agente identifica que ha visto dos cargos en el supermercado SUPERMERCADO DEMO SAN ISIDRO (TRX-3001 y TRX-3002) | 17974 ms / 19749 ms |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | No invoca a ninguna tool | Pide confirmar por cuál transacción se ingresará el reclamo (TRX-3001 y TRX-3002), indica lo que ocurrirá y cita las fuentes consultadas | 18089 ms / 18491 ms |
+| Acción confirmada | Confirmo que deseo reclamar la transacción TRX-3002. El motivo es que me cobraron dos veces en el supermercado. Solicito registrar el reclamo. | → file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, reason=Me cobraron dos veces en el supermercado; solicito reclamo por cargo duplicado.) | Respuesta NO SE EJECUTA, pendiente de aprobacion. Devuelve un json con status pendiente_aporbacion e indica que ha solicitado el reigstro delreclamo y queda pendinete aprobación por un asesor. | 25334 ms / 25481 ms |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | No invoca a ninguna tool | Indica que no puede ver saldos y se marca como out_of_scope. Cita la fuente service-channels.html | 12806 ms / 13062 ms |
+| Tool de otro dominio | Soy CUS-1001, quiero solicitar un préstamo personal de S/ 20,000 a 24 meses. ¿Cuánto pagaría mensualmente? | El agente responde out_of_scope, indica que el alcance de este canal es fraude, bloqueo y reclamos. | No invoca a ninguna tool | 12911 ms / 13728 ms |
 
 ### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
 
-No
+No. Al consultar el saldo de una cuenta de ahorros, el agente identificó correctamente que la solicitud estaba fuera de las capacidades disponibles para el dominio fraud y clasificó la respuesta como out_of_scope.
+
+No inventó un saldo ni intentó obtenerlo mediante una tool que no correspondía. En su lugar, explicó la limitación y orientó al usuario hacia los canales bancarios disponibles, citando como fuente el documento service-channels.html.
 
 ### Conclusión
 
