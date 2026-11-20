@@ -424,48 +424,35 @@ Estos cambios quedan como **propuesta de mejora**. Los resultados de la tabla co
 
 ## Sesión 6 — Tools del MCP en el chat
 
-Dominio: `fraud`. MCP: `http://127.0.0.1:8200/mcp`.
-
-Resultados transcritos de las ejecuciones de `uv run python dev/mcp/mcp_tools.py` y `uv run python dev/chat.py` compartidas en el chat. La conversación contiene tres turnos consecutivos. Los tiempos corresponden al primer texto y a la respuesta completa, según la consola.
+Dominio: `fraud`. MCP: el compartido (`bank-mcp`).
 
 ### Tools de tu dominio
 
 | MCP | Tools que lista `dev/mcp/mcp_tools.py` |
 |---|---|
-| Mock | **4 herramientas:** `block_card(card_id, reason)` y `file_claim(customer_id, transaction_id, reason)`, acciones sensibles. `get_claim_status(claim_id)` y `get_transactions(customer_id, limit)`, consultas. |
-| Compartido | No ejecutado en la evidencia proporcionada. La única salida de descubrimiento corresponde al MCP local en `http://127.0.0.1:8200/mcp`. |
-
-El contrato local indica que `limit` es opcional en `get_transactions`, con valor predeterminado de 10 y rango de 1 a 50. El descubrimiento confirma las herramientas disponibles, pero no demuestra su ejecución durante la conversación.
+| Mock |get_transactions, get_claim_status, block_card, file_claim |
+| Compartido | get_transactions, get_claim_status, block_card, file_claim |
 
 ### Conversación en `dev/chat.py` (paso 12)
 
 | Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
 |---|---|---|---|---|
-| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | Ninguna llamada visible. No aparece `→ get_transactions`. | Clasificó el mensaje como `sensitive_action`. Pidió autorización para consultar movimientos e identificar el cargo. Solicitó fecha, monto y comercio. Citó `chargeback-form.md` y `unrecognized-charges-procedure.md`. No mostró movimientos. | 9273 / 9559 |
-| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | Ninguna llamada visible. No aparece `→ file_claim`. | Mantuvo `sensitive_action`. Pidió el ID de la operación o fecha, monto y comercio. Volvió a ofrecer la consulta de movimientos. Indicó que el reclamo quedaría pendiente de aprobación de un asesor. No mostró un ID de reclamo ni un registro confirmado. | 13962 / 14214 |
-| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna llamada visible. | Clasificó el mensaje como `out_of_scope`. Explicó que no podía consultar saldos. Remitió a la app, banca por internet o al (01) 555-0200. Citó `service-channels.html`. | 10721 / 10856 |
-| Tool de otro dominio | No se envió un mensaje específico para esta prueba en la conversación proporcionada. | No observado. | Prueba no ejecutada. La consulta de saldo no demuestra el uso ni el rechazo de una herramienta disponible en otro dominio. | — |
-
-La primera fila conserva el nombre de la prueba de la plantilla. El mensaje real recibió `sensitive_action`, por lo que no verifica una consulta clasificada como `data_query`. La segunda fila registra la confirmación verbal del cliente, pero no acredita la ejecución de la acción.
-
-| **Turno** | **Tokens de entrada** | **Tokens de salida** |
-| :--- | ---: | ---: |
-| Cargo duplicado | 1499 | 911 |
-| Confirmación del reclamo | 1906 | 1395 |
-| Consulta de saldo | 2054 | 1078 |
-| **Total de los tres turnos** | **5459** | **3384** |
+| Consulta de tu dominio | Soy CUS-1001, me cobraron dos veces en el supermercado | `get_transactions(customer_id=CUS-1001, limit=10)` | Intención `data_query`. Consultó los movimientos e identificó dos cargos idénticos: `TRX-3001` y `TRX-3002`, del 20/10/2026, por S/186.40 cada uno en SUPERMERCADO DEMO SAN ISIDRO. Pidió confirmación para solicitar el reclamo. | 17553 / 17830 |
+| Acción confirmada | Sí, registra el reclamo por el cargo duplicado | `file_claim(customer_id=CUS-1001, transaction_id=TRX-3001, reason="Cargo duplicado: cargos TRX-3001 y TRX-3002 en SUPERMERCADO DEMO SAN ISIDRO")` y `file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, reason="Cargo duplicado: cargos TRX-3001 y TRX-3002 en SUPERMERCADO DEMO SAN ISIDRO")` | Intención `sensitive_action`. Pidió registrar el reclamo para ambas transacciones. Las dos solicitudes devolvieron `pendiente_aprobacion`: no se ejecutaron ni registraron todavía. El agente informó que un asesor debía revisarlas. | 26364 / 27279 |
+| Sin tool que la resuelva | ¿Cuál es el saldo de mi cuenta de ahorros? | Ninguna. | Intención `out_of_scope`. Indicó que no podía consultar saldos y orientó al cliente hacia la app, banca por internet, una agencia o atención al cliente. | 10705 / 10878 |
+| Tool de otro dominio | ¿Dónde hay una agencia en Miraflores? | Ninguna. No pidió una tool de otro dominio. | Intención `product_question`. Reconoció que los fragmentos no incluían una dirección en Miraflores. Citó `service-channels.html` para informar los canales y horarios de atención. | 12573 / 13520 |
 
 ### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
 
-**No inventó un saldo ni afirmó haber registrado el reclamo.** Tampoco presentó movimientos, montos o identificadores obtenidos de una herramienta. El ID `TRX-3002` apareció explícitamente como ejemplo del formato solicitado.
+No inventó un saldo ni una dirección de agencia en las respuestas mostradas. Para el saldo, explicó la limitación del servicio. Para Miraflores, reconoció que no tenía la dirección y citó `service-channels.html` para orientar al cliente hacia otros canales.
 
-El agente ofreció revisar los «últimos 60 días» de movimientos. El contrato de `get_transactions` admite `customer_id` y `limit`, pero no un intervalo de fechas. La transcripción no demuestra esa cobertura temporal. Por ello, esa oferta requiere verificación y no debe registrarse como una consulta realizada.
+En el reclamo, el agente anunció que el cliente recibiría un código en la app después de la aprobación. La ejecución mostrada no permite verificar esa entrega futura.
 
 ### Conclusión
 
-El MCP local publicó las cuatro herramientas de `fraud`. La conversación mostró dos respuestas `sensitive_action` y una `out_of_scope`. El agente pidió los datos necesarios para identificar la operación y rechazó la consulta de saldo sin inventar su valor.
+`get_transactions` permitió consultar los movimientos y detectar los dos cargos idénticos. Tras la confirmación del cliente, el agente pidió `file_claim` dos veces, una por cada transacción. Ambas solicitudes quedaron en `pendiente_aprobacion`. Las acciones sensibles no se ejecutaron y el reclamo no quedó registrado. La confirmación del cliente no sustituyó la aprobación del asesor.
 
-**La prueba no demuestra la ejecución de herramientas MCP ni el registro de un reclamo.** El agente pidió permiso para consultar movimientos, aunque el contrato identifica `get_transactions` como consulta. Incluso después de la confirmación verbal, el flujo no avanzó hasta mostrar movimientos o preparar una acción sobre una transacción identificada.
+Las consultas de saldo y agencias no activaron tools. El agente rechazó la consulta de saldo por estar fuera del alcance. Para la agencia, respondió con documentos y reconoció que faltaba la dirección. Por tanto, esta ejecución no demuestra el uso de una tool de otro dominio.
 
 ## Sesión 7 — Skills, memoria de trabajo y Agent Framework
 
@@ -473,21 +460,33 @@ Dominio: `fraud`. La misma conversación con los dos runtimes (paso 7).
 
 | | `react` | `agent_framework` |
 |---|---|---|
-| Tools pedidas en la consulta | _(anotar)_ | _(anotar)_ |
-| La acción sensible quedó **NO SE EJECUTA** | _(anotar)_ | _(anotar)_ |
-| Pregunta de memoria respondida sin `→` | _(anotar)_ | _(anotar)_ |
-| Primer texto (ms) | _(anotar)_ | _(anotar)_ |
-| Respuesta completa (ms) | _(anotar)_ | _(anotar)_ |
-| Tokens (entrada / salida) | _(anotar)_ | _(anotar)_ |
+| Tools pedidas en la consulta | `get_transactions(customer_id=CUS-1001, limit=10)` | `get_transactions(customer_id=CUS-1001, limit=20)` |
+| La acción sensible quedó **NO SE EJECUTA** | Tras la confirmación, pidió precisar si el reclamo correspondía a `TRX-3001`, `TRX-3002` o ambos. No pidió `file_claim`. | Pidió `file_claim` para `TRX-3002`. La solicitud devolvió `pendiente_aprobacion` y **NO SE EJECUTA**. La acción no se ejecutó ni registró. |
+| Pregunta de memoria respondida sin `→` | Sí. Ante «¿Qué movimientos estaban duplicados?», recordó `TRX-3001` y `TRX-3002`, el comercio, S/186.40 por cargo y la fecha 2026-10-20. No pidió otra tool. | Sí. Ante la misma pregunta, recordó los mismos movimientos, comercio, monto y fecha. También indicó la tarjeta `CRD-2001`. No pidió otra tool. |
+| Primer texto (ms) | Consulta: 16088<br>Confirmación: 19879<br>Saldo: 14557<br>Memoria: 16729 | Consulta: 19174<br>Confirmación: 25509<br>Saldo: 13815<br>Memoria: 17489 |
+| Respuesta completa (ms) | Consulta: 16343<br>Confirmación: 20125<br>Saldo: 14689<br>Memoria: 16859 | Consulta: 19430<br>Confirmación: 25647<br>Saldo: 13951<br>Memoria: 17621 |
+| Tokens (entrada / salida) | Consulta: 3705 / 1499<br>Confirmación: 2530 / 1975<br>Saldo: 2703 / 1248<br>Memoria: 2860 / 1627<br>**Total: 11798 / 6349** | Consulta: 3705 / 1698<br>Confirmación: 4898 / 2813<br>Saldo: 3013 / 1242<br>Memoria: 3313 / 1241<br>**Total: 14929 / 6994** |
 
 ### ¿La skill frenó la tool de otro dominio?
 
-Mensaje: _(anotar)_. Respuesta: _(anotar)_.
+Ambos runtimes asignaron `out_of_scope`, explicaron que no podían consultar saldos y no pidieron ninguna tool.
+
+`react` orientó al cliente hacia la aplicación móvil, banca por teléfono, cajero o sucursal. Citó `service-channels.html` para la aplicación y la banca por teléfono. `agent_framework` sugirió la aplicación, banca por internet, cajero, agencia o atención al cliente, sin mostrar fuentes.
+
+El registro confirma el rechazo de la consulta por alcance. No muestra una tool de otro dominio solicitada y bloqueada.
 
 ### Diferencias entre los dos runtimes
 
-_(anotar)_
+- **Consulta inicial:** ambos identificaron los cargos `TRX-3001` y `TRX-3002`, por S/186.40 cada uno en SUPERMERCADO DEMO SAN ISIDRO, del 20/10/2026. `react` pidió hasta 10 movimientos y clasificó el mensaje como `data_query`. `agent_framework` pidió hasta 20 y lo clasificó como `sensitive_action`.
+- **Confirmación del reclamo:** `react` pidió elegir uno o ambos movimientos y no llamó a `file_claim`. `agent_framework` pidió `file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, reason="Cargo duplicado: se cobraron TRX-3001 y TRX-3002. Solicito contracargo (código 13.4).")`. La solicitud quedó pendiente de aprobación. Su respuesta mencionó ambos movimientos, aunque la llamada apuntó solo a `TRX-3002`.
+- **Memoria de la conversación:** ambos clasificaron la pregunta de memoria como `data_query` y respondieron con los datos previos, sin otra llamada `→ get_transactions`. `react` volvió a pedir confirmación para reclamar ambos movimientos. `agent_framework` incluyó la tarjeta `CRD-2001`.
+- **Latencia:** `react` mostró menores tiempos de primer texto y respuesta completa en la consulta inicial, la confirmación y la pregunta de memoria. `agent_framework` respondió antes a la consulta de saldo. En la confirmación, solo `agent_framework` pidió una acción sensible, por lo que los runtimes realizaron operaciones distintas.
+- **Tokens:** `react` acumuló 11798 tokens de entrada y 6349 de salida. `agent_framework` acumuló 14929 de entrada y 6994 de salida. Hay una ejecución por runtime. Estos valores describen la muestra y no demuestran una diferencia general de rendimiento.
 
 ### Conclusión
 
-_(anotar)_
+Ambos runtimes consultaron los movimientos y recordaron los cargos duplicados después de la consulta de saldo, sin pedir otra tool. La pregunta de memoria quedó respondida en ambos casos.
+
+`agent_framework` avanzó hasta solicitar el reclamo tras la confirmación del cliente. La solicitud quedó en `pendiente_aprobacion`, sin ejecutar ni registrar la acción. `react` pidió precisar los movimientos y no llegó a solicitar el reclamo.
+
+Ambos rechazaron la consulta de saldo como `out_of_scope` sin pedir herramientas. La transcripción no permite confirmar que una skill haya bloqueado una tool de otro dominio.
