@@ -10,9 +10,10 @@ from fakes import (
 )
 
 from agent.application.chat_service import MAX_TOOL_ROUNDS, TOOLS_HEADER, ChatService
+from agent.application.react_runtime import ReactRuntime
 from agent.domain.errors import AgentError, ErrorKind
 from agent.domain.knowledge import Chunk, Citation
-from agent.domain.models import AgentTurn, AnswerDelta, Intent, IntentDetected, ToolCall, ToolResult, ToolStatus
+from agent.domain.models import AgentTurn, AnswerDelta, Intent, IntentDetected, Skill, ToolCall, ToolResult, ToolStatus
 from agent.infrastructure.persistence.in_memory_store import InMemoryConversationStore
 
 DEADLINES = Chunk(id="c1", content="Plazos\n\nSe responde en 15 días.", doc_type="regulation", section="Plazos", source="regulation.pdf")
@@ -23,7 +24,10 @@ FEES = ToolCall(id="call-1", name="get_charged_fees", arguments={"customer_id": 
 REFUND = ToolCall(id="call-2", name="request_fee_refund", arguments={"fee_id": "FEE-4002", "reason": "cobro indebido"})
 
 
-def make_service(model, max_turns: int = 10, chunks: list[Chunk] | None = None, tools=None) -> ChatService:
+FEES_SKILL = Skill(name="fees", instructions="SKILL fees", tools=["get_charged_fees"], max_tool_rounds=2)
+
+
+def make_service(model, max_turns: int = 10, chunks: list[Chunk] | None = None, tools=None, skill=None) -> ChatService:
     return ChatService(
         model=model,
         rewriter=model,
@@ -34,6 +38,7 @@ def make_service(model, max_turns: int = 10, chunks: list[Chunk] | None = None, 
         max_turns=max_turns,
         top_k=5,
         tools=tools,
+        skill=skill,
     )
 
 
@@ -84,11 +89,11 @@ def test_failed_turn_is_not_saved():
     service = make_service(model)
     service.handle("s1", "Hola")
 
-    service.model = FailingChatModel(ErrorKind.UPSTREAM)
+    service.runtime = ReactRuntime(FailingChatModel(ErrorKind.UPSTREAM))
     with pytest.raises(AgentError):
         service.handle("s1", "¿sigues?")
 
-    service.model = model
+    service.runtime = ReactRuntime(model)
     service.handle("s1", "Me robaron la tarjeta")
     assert roles(model.calls[-1]) == ["system", "user", "assistant", "system", "user"]
 
