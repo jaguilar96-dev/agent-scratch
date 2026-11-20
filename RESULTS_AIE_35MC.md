@@ -421,6 +421,7 @@ Después de aplicar los cambios, repetiría los 31 casos con la misma configurac
 
 Estos cambios quedan como **propuesta de mejora**. Los resultados de la tabla corresponden a la ejecución original, antes de aplicar esas medidas.
 
+
 ## Sesión 6 — Tools del MCP en el chat
 
 Dominio: `fraud`. MCP: el compartido (`bank-mcp`).
@@ -452,3 +453,40 @@ En el reclamo, el agente anunció que el cliente recibiría un código en la app
 `get_transactions` permitió consultar los movimientos y detectar los dos cargos idénticos. Tras la confirmación del cliente, el agente pidió `file_claim` dos veces, una por cada transacción. Ambas solicitudes quedaron en `pendiente_aprobacion`. Las acciones sensibles no se ejecutaron y el reclamo no quedó registrado. La confirmación del cliente no sustituyó la aprobación del asesor.
 
 Las consultas de saldo y agencias no activaron tools. El agente rechazó la consulta de saldo por estar fuera del alcance. Para la agencia, respondió con documentos y reconoció que faltaba la dirección. Por tanto, esta ejecución no demuestra el uso de una tool de otro dominio.
+
+## Sesión 7 — Skills, memoria de trabajo y Agent Framework
+
+Dominio: `fraud`. La misma conversación con los dos runtimes (paso 7).
+
+| | `react` | `agent_framework` |
+|---|---|---|
+| Tools pedidas en la consulta | `get_transactions(customer_id=CUS-1001, limit=10)` | `get_transactions(customer_id=CUS-1001, limit=20)` |
+| La acción sensible quedó **NO SE EJECUTA** | Tras la confirmación, pidió precisar si el reclamo correspondía a `TRX-3001`, `TRX-3002` o ambos. No pidió `file_claim`. | Pidió `file_claim` para `TRX-3002`. La solicitud devolvió `pendiente_aprobacion` y **NO SE EJECUTA**. La acción no se ejecutó ni registró. |
+| Pregunta de memoria respondida sin `→` | Sí. Ante «¿Qué movimientos estaban duplicados?», recordó `TRX-3001` y `TRX-3002`, el comercio, S/186.40 por cargo y la fecha 2026-10-20. No pidió otra tool. | Sí. Ante la misma pregunta, recordó los mismos movimientos, comercio, monto y fecha. También indicó la tarjeta `CRD-2001`. No pidió otra tool. |
+| Primer texto (ms) | Consulta: 16088<br>Confirmación: 19879<br>Saldo: 14557<br>Memoria: 16729 | Consulta: 19174<br>Confirmación: 25509<br>Saldo: 13815<br>Memoria: 17489 |
+| Respuesta completa (ms) | Consulta: 16343<br>Confirmación: 20125<br>Saldo: 14689<br>Memoria: 16859 | Consulta: 19430<br>Confirmación: 25647<br>Saldo: 13951<br>Memoria: 17621 |
+| Tokens (entrada / salida) | Consulta: 3705 / 1499<br>Confirmación: 2530 / 1975<br>Saldo: 2703 / 1248<br>Memoria: 2860 / 1627<br>**Total: 11798 / 6349** | Consulta: 3705 / 1698<br>Confirmación: 4898 / 2813<br>Saldo: 3013 / 1242<br>Memoria: 3313 / 1241<br>**Total: 14929 / 6994** |
+
+### ¿La skill frenó la tool de otro dominio?
+
+Ambos runtimes asignaron `out_of_scope`, explicaron que no podían consultar saldos y no pidieron ninguna tool.
+
+`react` orientó al cliente hacia la aplicación móvil, banca por teléfono, cajero o sucursal. Citó `service-channels.html` para la aplicación y la banca por teléfono. `agent_framework` sugirió la aplicación, banca por internet, cajero, agencia o atención al cliente, sin mostrar fuentes.
+
+El registro confirma el rechazo de la consulta por alcance. No muestra una tool de otro dominio solicitada y bloqueada.
+
+### Diferencias entre los dos runtimes
+
+- **Consulta inicial:** ambos identificaron los cargos `TRX-3001` y `TRX-3002`, por S/186.40 cada uno en SUPERMERCADO DEMO SAN ISIDRO, del 20/10/2026. `react` pidió hasta 10 movimientos y clasificó el mensaje como `data_query`. `agent_framework` pidió hasta 20 y lo clasificó como `sensitive_action`.
+- **Confirmación del reclamo:** `react` pidió elegir uno o ambos movimientos y no llamó a `file_claim`. `agent_framework` pidió `file_claim(customer_id=CUS-1001, transaction_id=TRX-3002, reason="Cargo duplicado: se cobraron TRX-3001 y TRX-3002. Solicito contracargo (código 13.4).")`. La solicitud quedó pendiente de aprobación. Su respuesta mencionó ambos movimientos, aunque la llamada apuntó solo a `TRX-3002`.
+- **Memoria de la conversación:** ambos clasificaron la pregunta de memoria como `data_query` y respondieron con los datos previos, sin otra llamada `→ get_transactions`. `react` volvió a pedir confirmación para reclamar ambos movimientos. `agent_framework` incluyó la tarjeta `CRD-2001`.
+- **Latencia:** `react` mostró menores tiempos de primer texto y respuesta completa en la consulta inicial, la confirmación y la pregunta de memoria. `agent_framework` respondió antes a la consulta de saldo. En la confirmación, solo `agent_framework` pidió una acción sensible, por lo que los runtimes realizaron operaciones distintas.
+- **Tokens:** `react` acumuló 11798 tokens de entrada y 6349 de salida. `agent_framework` acumuló 14929 de entrada y 6994 de salida. Hay una ejecución por runtime. Estos valores describen la muestra y no demuestran una diferencia general de rendimiento.
+
+### Conclusión
+
+Ambos runtimes consultaron los movimientos y recordaron los cargos duplicados después de la consulta de saldo, sin pedir otra tool. La pregunta de memoria quedó respondida en ambos casos.
+
+`agent_framework` avanzó hasta solicitar el reclamo tras la confirmación del cliente. La solicitud quedó en `pendiente_aprobacion`, sin ejecutar ni registrar la acción. `react` pidió precisar los movimientos y no llegó a solicitar el reclamo.
+
+Ambos rechazaron la consulta de saldo como `out_of_scope` sin pedir herramientas. La transcripción no permite confirmar que una skill haya bloqueado una tool de otro dominio.

@@ -84,7 +84,7 @@ Tú: ¿Qué decía la política de bloqueo de 2022?
   (primer texto en 11913 ms, respuesta completa en 12120 ms, 1778 tokens de entrada, 1152 de salida)
 Tú: ¿A cuánto está el dólar hoy?
   Agente [out_of_scope]: No puedo proporcionar cotizaciones en tiempo real. Para conocer el tipo de cambio hoy, revisa la web o la app del Banco Demo, la página del Banco Central de Reserva del Perú o consulta una casa de cambio autorizada.
-  (primer texto en 7840 ms, respuesta completa en 7999 ms, 1687 tokens de entrada, 610 de salida) 
+  (primer texto en 7840 ms, respuesta completa en 7999 ms, 1687 tokens de entrada, 610 de salida)
 
 # S5
 ## Línea base (S5)
@@ -141,12 +141,4 @@ No inventó un saldo ni intentó obtenerlo mediante una tool que no correspondí
 
 ### Conclusión
 
-Las pruebas realizadas permitieron verificar la integración del agente con las tools MCP del dominio fraud, tanto en el servidor mock como en el compartido.
-
-El agente utilizó correctamente get_transactions para identificar dos cargos duplicados (TRX-3001 y TRX-3002), correspondientes a un consumo de S/ 186.40 en SUPERMERCADO DEMO SAN ISIDRO.
-
-Ante la solicitud de registrar un reclamo, el agente solicitó identificar la transacción afectada y proporcionar una descripción del problema antes de continuar. No ejecutó ninguna acción sensible durante la conversación observada.
-
-Asimismo, frente a una consulta que no podía resolver, como el saldo de una cuenta de ahorros, reconoció sus limitaciones sin inventar información y proporcionó orientación respaldada por el corpus documental.
-
-En general, el comportamiento observado demuestra que el agente puede consultar información mediante MCP, conservar el contexto conversacional y reconocer solicitudes fuera de su alcance.
+El MCP local publicó correctamente las cuatro herramientas de fraud y el agente respondió de forma adecuada. Sin embargo, no se pudo comprobar la ejecución de las herramientas ni el registro de un reclamo. Queda pendiente probar la consulta de movimientos, el registro de un reclamo y la conexión con otras herramientas del MCP compartido.
