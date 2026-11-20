@@ -1,0 +1,1 @@
+{"id":"fraud-AIE24JQ","type":"answerable","history":[],"question":"Creo que compartí mis datos en un enlace falso que parecía del banco, ¿qué debo hacer ahora?","expected_intent":"product_question","expected_sources":["digital-security-and-phishing.md"],"forbidden_sources":["internal-notice-cafeteria.html"],"key_facts":["clave de banca por internet"]}
