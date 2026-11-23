@@ -223,7 +223,7 @@ No. Con el saldo de ahorros no pidió ninguna tool ni dio un monto: dijo que no 
 
 ### Conclusión
 
-El agente usa las tools del MCP de su dominio y combina sus datos con el RAG (citas del procedimiento de reclamos). Las acciones sensibles nunca llegan al MCP: `_run` las deja pendientes de aprobación, y eso importó en el primer turno, donde el modelo pidió `file_claim` sin esperar la confirmación del cliente. La sesión 8 (aprobación humana) es la que cierra ese hueco. Cambiar del mock al MCP compartido fue solo cambiar `MCP_URL` (con `/mcp` al final) y `MCP_SCOPE` en el `.env`: aparecieron las mismas 4 tools. Con tools, el primer texto tarda entre 25 y 40 s, porque cada vuelta del ciclo es otra llamada a un modelo que razona.
+Ahora el agente consulta los movimientos del cliente con las tools y además sigue citando el corpus, así que la respuesta mezcla datos reales con el procedimiento de reclamos. Lo que más me llamó la atención fue el primer turno: el modelo pidió el `file_claim` sin que el cliente lo confirmara. No pasó nada porque las acciones sensibles se quedan en pendiente, pero queda claro que no se puede confiar solo en el modelo para eso. Pasar del mock al MCP compartido fue más fácil de lo que pensaba, solo cambié la URL y el scope en el `.env` (la URL tiene que terminar en `/mcp`, si no da Not Found). Lo malo es el tiempo: con tools la primera respuesta se demora entre 25 y 40 segundos.
 
 ## Sesión 7 — Skills, memoria de trabajo y Agent Framework
 
@@ -246,11 +246,11 @@ Mensaje: `Simúlame la cuota de un préstamo de 20000 soles a 24 meses` (la tool
 
 ### Diferencias entre los dos runtimes
 
-Ninguna en el comportamiento: las mismas tools, el mismo `NO SE EJECUTA`, la misma memoria y el mismo streaming (`→`, resultado, intención y respuesta en pedazos). Cambian detalles que decide el modelo en cada corrida: `limit=20` con react y `limit=10` con agent_framework, la redacción del motivo del reclamo y que agent_framework no citó fuentes en la consulta (react citó `chargeback-form.md`). Los tiempos y los tokens son del mismo orden (20 a 30 s el primer texto con tools), porque los dos llaman al mismo deployment `gpt-5-mini`; agent_framework fue algo más rápido en la consulta y algo más lento en la acción y en la pregunta sin tool.
+En lo importante se portaron igual: usaron las mismas tools, el reclamo quedó sin ejecutar en los dos y los dos se acordaron de los movimientos. Las diferencias que vi son más del modelo que del runtime, por ejemplo react pidió `limit=20` y agent_framework `limit=10`, y en la consulta solo react citó una fuente (`chargeback-form.md`). En tiempos tampoco hubo mucha diferencia, todo anduvo entre 20 y 30 segundos, lo cual tiene sentido porque los dos usan el mismo `gpt-5-mini` por detrás.
 
 ### Conclusión
 
-Cambiar quién conduce el turno fue una línea del `.env` (`AGENT_RUNTIME`): las reglas (lista blanca de la skill, `max_tool_rounds` y acción sensible pendiente) viven en `ChatService` y se cumplieron igual con los dos runtimes. La skill de fraud corrigió lo que se vio en la sesión 6: ahora el modelo consulta, muestra los duplicados y pide confirmación antes de `file_claim`, en vez de pedir el reclamo en el primer turno. La memoria de trabajo permitió "registra el reclamo por el cargo duplicado" y "¿qué movimientos estaban duplicados?" sin volver a llamar a `get_transactions`. El `.env` queda con `AGENT_RUNTIME=agent_framework` para la sesión 8.
+Me gustó que cambiar de runtime sea solo cambiar `AGENT_RUNTIME` en el `.env` y reiniciar. Como las reglas están en `ChatService` y no en el framework, con los dos se respetó lo mismo. La skill sí se notó: en la sesión 6 el modelo pedía el reclamo de frente, y ahora primero revisa los movimientos, me muestra los duplicados y espera a que confirme. La memoria de trabajo también funcionó, porque cuando le dije "registra el reclamo por el cargo duplicado" no volvió a consultar y ya sabía que era TRX-3002. Dejé el `.env` con `agent_framework` para la sesión 8.
 
 ## Sesión 8 — Aprobación humana, validación y reintentos
 
@@ -284,4 +284,4 @@ No. Con los dos runtimes, `file_claim` salió primero como **NO SE EJECUTA, pend
 
 ### Conclusión
 
-La aprobación vive en `_run` y `resolve`, no en el framework: se comportó igual con `agent_framework` (aprobar) y con `react` (rechazar). Después de la decisión, el modelo respondió sin tools y contó solo lo que dijo el resultado: con la aprobación aclaró que el reclamo quedó registrado para que el banco lo procese, sin prometer la devolución. El agente ya no se cae con un error de negocio: CUS-9999 terminó en una respuesta al cliente, no en un 502. La trayectoria deja una línea por turno, con cada tool y su estado, y basta para ver qué hizo el agente. Pendiente para la sesión 9: la acción pendiente vive en memoria y se pierde si el agente se reinicia antes de la decisión. El `.env` queda con `AGENT_RUNTIME=agent_framework`.
+Con esta sesión ya me siento más tranquilo con las acciones sensibles, porque nada se ejecuta hasta que alguien dice que sí. Lo probé aprobando con agent_framework y rechazando con react, y en los dos casos funcionó igual. Cuando aprobé, el agente le dijo al cliente que el reclamo CLM-9001 quedó registrado, pero no le prometió la devolución, que es lo correcto. Con CUS-9999 ya no sale un error 502, el agente simplemente le pide al cliente que revise su código. Las líneas de trayectoria del log me sirvieron bastante para seguir qué hizo en cada turno sin tener que leer todo. Lo que falta es que la acción pendiente se guarda en memoria, entonces si se reinicia el agente antes de decidir se pierde, y eso se arregla en la sesión 9 con Cosmos DB.
