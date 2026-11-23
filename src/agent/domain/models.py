@@ -3,7 +3,9 @@ from typing import Annotated, Any, Self
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
-Message = dict[str, Any]  # formato OpenAI; T3 suma role "tool" sin cambiar el tipo
+from agent.domain.knowledge import Citation, SearchHit
+
+Message = dict[str, Any]  # formato OpenAI; desde S6 también el pedido de tools del modelo y role "tool"
 
 
 class Intent(StrEnum):
@@ -26,10 +28,25 @@ class AgentReply(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    # el modelo escribe los campos en este orden: con streaming, intent llega antes que answer y sources al final
     intent: Intent = Field(description="Intención del último mensaje del cliente.")
     # validación posterior y no en el schema: el modo strict no admite todo JSON Schema (p. ej. minLength)
     answer: Annotated[str, AfterValidator(_not_blank)] = Field(
         description="Respuesta al cliente en español, breve y clara."
+    )
+    sources: list[int] = Field(
+        description="Números de los fragmentos del contexto que usaste para responder, por ejemplo [1, 3]. "
+        "Lista vacía si no usaste ninguno."
+    )
+
+
+class SearchQuery(BaseModel):
+    """Pregunta reescrita para buscar en el corpus (structured output del rewrite)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    query: Annotated[str, AfterValidator(_not_blank)] = Field(
+        description="La última pregunta del cliente reescrita para que se entienda sola, sin leer la conversación."
     )
 
 
@@ -59,8 +76,85 @@ class ModelResult(BaseModel):
     usage: Usage
 
 
+class RewriteResult(BaseModel):
+    """Una llamada de rewrite: la pregunta para buscar + consumo."""
+
+    query: str
+    usage: Usage
+
+
+class ToolDefinition(BaseModel):
+    """Una tool que el agente ofrece al modelo. Es todo lo que el modelo sabe de ella."""
+
+    name: str
+    description: str
+    parameters: dict[str, Any]  # JSON Schema de los argumentos
+    sensitive: bool  # cambia algo en el banco: no se ejecuta sin aprobación humana (S8)
+
+
+class ToolCall(BaseModel):
+    """El modelo pide ejecutar una tool. En streaming, también avisa qué tool se va a usar."""
+
+    id: str
+    name: str
+    arguments: dict[str, Any]
+
+
+class ToolStatus(StrEnum):
+    OK = "ok"
+    ERROR = "error"  # la tool respondió con un error de negocio, o no existe
+    PENDING_APPROVAL = "pending_approval"  # acción sensible: no se ejecutó
+
+
+class ToolResult(BaseModel):
+    """Qué pasó con una tool pedida. content vuelve al modelo como observación."""
+
+    call: ToolCall
+    status: ToolStatus
+    content: str
+
+
+class ToolRequest(BaseModel):
+    """Una llamada al modelo que, en vez de responder, pidió tools."""
+
+    calls: list[ToolCall]
+    usage: Usage
+
+
 class AgentTurn(BaseModel):
-    """Resultado de un turno. T2 agrega citations; T3 tool_calls y pending_action."""
+    """Resultado de un turno, con las fuentes que citó y las tools que usó. S8 agrega pending_action."""
 
     reply: AgentReply
     usage: Usage
+    citations: list[Citation] = []
+    tools: list[ToolResult] = []
+    hits: list[SearchHit] = []  # lo que se recuperó: lo usan la evaluación y el juez; no sale en la API
+
+
+class IntentDetected(BaseModel):
+    """Streaming: ya se sabe la intención, antes de que empiece el texto de la respuesta."""
+
+    intent: Intent
+
+
+class AnswerDelta(BaseModel):
+    """Streaming: un pedazo nuevo de la respuesta, mientras el modelo la escribe."""
+
+    text: str
+
+
+# lo que entrega ChatModel.stream; el último es ModelResult (respondió) o ToolRequest (pidió tools)
+type ModelEvent = IntentDetected | AnswerDelta | ModelResult | ToolRequest
+class Skill(BaseModel):
+    """Cómo trabaja el agente en su dominio (S7): instrucciones, las tools que puede usar y cuándo debe parar."""
+
+    name: str
+    instructions: str
+    tools: list[str]  # lista blanca: además del dominio que filtra el MCP, la skill decide qué tools ve el modelo
+    max_tool_rounds: int = Field(ge=1)  # criterio de terminación: vueltas de tools sin responder antes de cortar
+
+
+# lo que entrega AgentRuntime.run: los eventos del modelo y de cada tool; el último es ModelResult, con el consumo total
+type RuntimeEvent = IntentDetected | AnswerDelta | ToolCall | ToolResult | ModelResult
+# lo que entrega ChatService.handle_stream: cada tool pedida y su resultado, después la respuesta; el último es AgentTurn
+type TurnEvent = IntentDetected | AnswerDelta | ToolCall | ToolResult | AgentTurn
