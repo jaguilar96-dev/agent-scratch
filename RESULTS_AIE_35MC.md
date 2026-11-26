@@ -523,3 +523,56 @@ Las consultas `get_transactions` sí se ejecutaron sin intervención del asesor.
 La prueba con `agent_framework` completó la aprobación y registró el reclamo `CLM-9001`. La prueba con `react` completó el rechazo sin ejecutar la acción. La confirmación del cliente no sustituyó la aprobación del asesor.
 
 El error de negocio por `CUS-9999` ocurrió con `react`. El agente informó que el cliente no existía y pidió corregir el código. Ante `1001`, asumió `CUS-1001` y respondió con movimientos previos, sin consultar otra vez.
+
+
+## Sesión 9 — Despliegue en Azure
+
+Equipo: `team-03`. Dominio: `fraud`.
+
+| Comprobación | Resultado |
+|---|---|
+| Tests en el contenedor (paso 3) |  => => naming to docker.io/library/agent:test                                                                                                                                0.0s
+ => => unpacking to docker.io/library/agent:test                                                                                                                             0.1s
+........................................................................ [ 50%]
+............................sssss....................................... [100%]
+139 passed, 5 skipped in 10.62s |
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | {'id': 'ff2c6dc6-d1c0-4805-9b6a-06e4cd23294a', 'messages': 6, 'pending': {'id': 'call_2dOofsHdhzuN26KlIqazKQ40', 'name': 'file_claim', 'arguments': {'customer_id': 'CUS-1001', 'transaction_id': 'TRX-3001', 'reason': 'Cargo duplicado en SUPERMERCADO DEMO SAN ISIDRO, solicito reclamo'}}} |
+| Imagen desplegada (`team-NN/agent:<sha>`) | IMAGE: acrworkshopjsu3.azurecr.io/team-03/agent:cefca1838dfb8f412b6883eb3d1e31c6be2b1f95 |
+| Revisión activa y duración del job `deploy` | El JOB duró 2m 9s, se puede validar en el enlace: https://github.com/jaguilar96-dev/agent-scratch/actions/runs/45732485041/job/139617879541 |
+| `/health` del agente desplegado | Agente en https://ca-agent-chat-03.icybush-2ea2dfc1.eastus2.azurecontainerapps.io: ok |
+| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | "Soy CUS-1001, me cobraron dos veces en el supermercado": primer texto en 58475 ms, respuesta completa en 58728 ms, 3480 tokens de entrada, 1527 de salida |
+| Asesor: ¿apruebas file_claim(customer_id=CUS-1001, transaction_id=TRX-3001, reason=Reclamo por cargo duplicado en supermercado (cliente reporta dos cargos iguales))? [s/n]: s
+    resultado: {"id": "CLM-9001", "customer_id": "CUS-1001", "transaction_id": "TRX-3001", "reason": "Reclamo por cargo duplicado en supermercado (cliente reporta dos cargos i
+  Agente [sensitive_action]: Su reclamo fue registrado con ID CLM-9001 por TRX-3001; estado: registered; abierto el 2026-10-28; fecha límite de respuesta: 2026-11-27. |
+
+### Qué pone Azure y qué pone la imagen
+
+Azure:
+APPLICATIONINSIGHTS_CONNECTION_STRING
+AZURE_CLIENT_ID
+AZURE_OPENAI_ENDPOINT
+COSMOS_CONTAINER
+COSMOS_DATABASE
+COSMOS_ENDPOINT
+FOUNDRY_PROJECT_ENDPOINT
+KEY_VAULT_URI
+MCP_SCOPE
+MCP_URL
+SEARCH_ENDPOINT
+SEARCH_INDEX
+TEAM_ID
+
+Imagen:
+DOMAIN
+FOUNDRY_AUTH_PROVIDER
+KNOWLEDGE_BASE
+AGENT_RUNTIME
+PATH
+
+### Problemas que encontraste y cómo los resolviste
+
+Ninguno
+
+### Conclusión
+
+La principal diferencia que veo entre Azure y local es el tiempo de respuesta.
