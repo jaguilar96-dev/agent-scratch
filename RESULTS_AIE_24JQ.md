@@ -285,3 +285,34 @@ No. Con los dos runtimes, `file_claim` salió primero como **NO SE EJECUTA, pend
 ### Conclusión
 
 Con esta sesión ya me siento más tranquilo con las acciones sensibles, porque nada se ejecuta hasta que alguien dice que sí. Lo probé aprobando con agent_framework y rechazando con react, y en los dos casos funcionó igual. Cuando aprobé, el agente le dijo al cliente que el reclamo CLM-9001 quedó registrado, pero no le prometió la devolución, que es lo correcto. Con CUS-9999 ya no sale un error 502, el agente simplemente le pide al cliente que revise su código. Las líneas de trayectoria del log me sirvieron bastante para seguir qué hizo en cada turno sin tener que leer todo. Lo que falta es que la acción pendiente se guarda en memoria, entonces si se reinicia el agente antes de decidir se pierde, y eso se arregla en la sesión 9 con Cosmos DB.
+
+## Sesión 9 — Despliegue en Azure
+
+Equipo: `team-03`. Dominio: `fraud`.
+
+| Comprobación | Resultado |
+|---|---|
+| Tests en el contenedor (paso 3) | `docker run --rm agent:test` → 139 passed, 5 skipped (los 5 son los golden sets). En mi laptop, `uv run pytest` → 144 passed |
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | Sí. Pedí el reclamo de TRX-3002, quedó NO SE EJECUTA, maté uvicorn y lo levanté de nuevo antes de responder. Al poner `s` se ejecutó igual: `resultado:` con CLM-9001. El arranque dijo `Conversation store: Cosmos DB workshop/team-03` |
+| Imagen desplegada (`team-NN/agent:<sha>`) | `team-03/agent:cefca1838dfb8f412b6883eb3d1e31c6be2b1f95` (el merge de equipo-03 a main) |
+| Revisión activa y duración del job `deploy` | `ca-agent-chat-03--0000002`, Running. Job `test` 37 s y job `deploy` 129 s |
+| `/health` del agente desplegado | `Agente en https://ca-agent-chat-03.<...>.azurecontainerapps.io: ok` |
+| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | "¿Cuánto tiempo tengo para reclamar un cargo que no reconozco?" → 60 días calendario, con Fuentes de `claims-regulation.pdf` (3.1 Plazo para presentar y 4. Plazos de respuesta). Primer texto 5986 ms, completa 6110 ms |
+| Acción aprobada contra Azure, con su `resultado:` | `get_transactions` encontró TRX-3001 y TRX-3002, pedí el reclamo de TRX-3002, quedó NO SE EJECUTA y al aprobar salió `resultado:` con CLM-9002, `registered` |
+
+### Qué pone Azure y qué pone la imagen
+
+La imagen fija `DOMAIN`, `FOUNDRY_AUTH_PROVIDER`, `KNOWLEDGE_BASE`, `AGENT_RUNTIME`, `PATH` y `PYTHONUNBUFFERED`. Azure pone en la Container App `AZURE_CLIENT_ID`, `AZURE_OPENAI_ENDPOINT`, `FOUNDRY_PROJECT_ENDPOINT`, `SEARCH_ENDPOINT`, `SEARCH_INDEX`, `MCP_URL`, `MCP_SCOPE`, `COSMOS_ENDPOINT`, `COSMOS_DATABASE`, `COSMOS_CONTAINER`, `KEY_VAULT_URI`, `TEAM_ID` y `APPLICATIONINSIGHTS_CONNECTION_STRING`. No hay ninguna api key ni contraseña, son endpoints y nombres de recursos.
+
+En los logs de la revisión salen las mismas líneas que en mi laptop: `Foundry auth provider: entra_id`, `Knowledge base: azure_search ... idx-team-03 · 57 chunks`, `Conversation store: Cosmos DB workshop/team-03`, `MCP: ... 4 tools` y `Agent runtime: agent_framework`.
+
+### Problemas que encontraste y cómo los resolviste
+
+- Docker Desktop estaba cerrado y `docker version` no mostraba el Server. Lo abrí, esperé que el motor arrancara y recién ahí construí las imágenes.
+- El primer intento del chat contra Azure se cortó en el `/health` por timeout. Al rato respondió 200 en 2 segundos, así que fue el arranque en frío de la réplica. Lo volví a correr y funcionó.
+- En la prueba local con Cosmos, el primer `get_transactions` respondió "El servicio del banco no responde". Era el banco en frío; en el siguiente mensaje el agente pidió el reclamo igual porque le di el TRX.
+- Para el `.env` saqué el endpoint de Cosmos con `az cosmosdb list` y usé el contenedor `team-03`.
+
+### Conclusión
+
+Lo más interesante fue ver que el mismo código corre en Azure sin tocar nada, solo cambian las variables, y que el agente entra a Foundry, AI Search, el MCP y Cosmos con la identidad administrada, sin que yo le pase ninguna clave. La prueba de reiniciar uvicorn con la acción pendiente me dejó claro para qué sirve Cosmos: antes eso daba 404 y ahora el reclamo se aprobó como si nada. Contra Azure la respuesta con fuentes fue incluso más rápida que en mi laptop (unos 6 segundos). Lo único raro fue el timeout del primer `/health`, que parece ser la réplica despertando.
