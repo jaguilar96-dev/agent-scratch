@@ -268,3 +268,85 @@ Se comprobó el funcionamiento del control humano sobre las acciones sensibles d
 También se verificó que el agente maneja errores de negocio y entradas inválidas sin interrumpir la conversación ni ejecutar operaciones innecesarias. Las trayectorias registradas en los logs permiten identificar las tools utilizadas, sus estados y la decisión del asesor.
 
 En conclusión, las pruebas realizadas confirman que el flujo de aprobación humana, la validación de entradas y el registro de trayectorias funcionan correctamente en los escenarios evaluados. Queda pendiente comprobar el comportamiento de los reintentos ante errores transitorios de conexión, ya que estos no se presentaron en las pruebas documentadas.
+
+# S9
+## Sesión 9 — Despliegue en Azure
+
+Equipo: `team-03`. Dominio: `fraud`.
+
+| Comprobación | Resultado |
+|---|---|
+| Tests en el contenedor (paso 3) | Una vez se hace el build del archivo Dockerfile y se ejecutan los test, se muestra ........................................................................ [ 50%]
+............................sssss....................................... [100%]
+139 passed, 5 skipped in 10.07s|
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | Efectivamente, recupera la sesión de la conversación, se validó mediante la consulta a cosmos: {'id': '643d7bf8-acbe-4e4c-9e43-c80141520fd6', 'messages': 8, 'pending': None} |
+| Imagen desplegada (`team-03/agent:<sha>`) | Resultado obtenido: IMAGE: acrworkshopjsu3.azurecr.io/team-03/agent:cefca1838dfb8f412b6883eb3d1e31c6be2b1f95 |
+| Revisión activa y duración del job `deploy` | El JOB duró 2m 9s, se puede validar en el enlace: https://github.com/jaguilar96-dev/agent-scratch/actions/runs/45732485041/job/139617879541 |
+| `/health` del agente desplegado | Agente en https://ca-agent-chat-03.icybush-2ea2dfc1.eastus2.azurecontainerapps.io: ok |
+| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | Primer mensaje: 53473 ms, Segundo mensaje: 16720 ms. Fuentes: [1] chargeback-form.md y [2] unrecognized-charges-procedure.md |
+| Acción aprobada contra Azure, con su `resultado:` | El resutlado se cortó en la consola, lo que se muestra es resultado: {"id": "CLM-9001", "customer_id": "CUS-1001", "transaction_id": "TRX-3002", "reason": "Cargo duplicado en supermercado, solicito reclamo por TRX-3002", "status"
+  Agente [sensitive_action]: Su reclamo quedó registrado con código CLM-9001; fue abierto el 2026-10-28 y la fecha límite de respuesta es 2026-11-27. La solicitud está registrada para que el banco la procese; no está aplicada aún. |
+
+### Qué pone Azure y qué pone la imagen
+
+Las variables de Azure:
+AZURE_OPENAI_ENDPOINT
+AZURE_CLIENT_ID
+COSMOS_ENDPOINT
+COSMOS_DATABASE
+COSMOS_CONTAINER
+SEARCH_ENDPOINT
+SEARCH_INDEX
+MCP_URL
+MCP_SCOPE
+TEAM_ID
+KEY_VAULT_URI
+
+Mientras que la imagen:
+DOMAIN
+FOUNDRY_AUTH_PROVIDER
+KNOWLEDGE_BASE
+AGENT_RUNTIME
+PATH
+
+### Problemas que encontraste y cómo los resolviste
+
+En realidad siguiendo la guía paso a paso no he presentado problemas o errores durante la compilación o despliegue del agente.
+
+### Conclusión
+
+El agente se desplegó correctamente en Azure y respondió a las consultas de la misma forma que cuando hacíamos pruebas locales. También se verificó que las acciones sensibles requieren aprobación humana y que el historial se conserva gracias a la integración con Cosmos DB. Las pruebas realizadas confirmaron el funcionamiento esperado del despliegue a través de los Actions de Github.
+
+# S10
+## Sesión 10 — Trazas por turno y dashboard
+
+Equipo: `team-03`. App Insights: `appi-team-03`. Los cuatro casos contra el agente desplegado (paso 8).
+
+| Caso | `operation_Id` | Latencia (ms) | Tokens de entrada | Tokens de salida | Tools | Error | Observaciones |
+|---|---|---|---|---|---|---|---|
+| Saludo | cf61badc32ff375533ac02706d24be22 | 5037 ms | 1488 | 388 | - | - | La suma de los tokens coincide con los tokens totales de Application Insights
+ |
+| Consulta con retrieval | d88fced4eae9fce2e06c2e40bf321eb7 | 44902 ms | 5812 | 2967 | get_transactions | Name: tools/call get_transactions, Type: N/A, Call status: false, Duration: 10.0 s | El primer intento a la tool falló, el segundo fue exitoso |
+| Llamada a tool | a8d54cdc99ae0ba1cf9fe93dadeacab8 | 58623 ms | 5046 | 2140 | file_claim | - | Hay un operation_id para cada file_claim: pending_approval y ok |
+| Error controlado | 58e4053f14ea31a47e5e2c9d89d44963 | 133 ms | - | - | - | POST /chat/actions falló: not_found: no hay una acción pendiente call-inventada en esta sesión | Message: not_found: no hay una acción pendiente call-inventada en esta sesión |
+
+En **Observaciones**, una línea: lo que llamó la atención de la traza (qué se llevó el tiempo, la dependencia que falló, si el
+error permite ubicar el turno). En **Tools**, `—` si el turno no llamó ninguna.
+
+### Lo que dice el workbook
+
+| Panel | Lo que viste |
+|---|---|
+| Latencia p95 por intención | sensitive_action: 44714ms, data_query: 26432ms, greeting: 9934ms |
+| Tokens por turno | Listado de las tools, file claim se divide en ok y pending_approval; así también get_transactions en ok y error |
+| Dónde se va el tiempo de un turno | El mayor tiempo lo veo en Foundry - chat, con 23 llamadas y el total ms es de 140940 |
+| Tools con error | Bueno, la única tool con error como tal es get_transactions |
+| Turnos con error | Me da el tiempo, el nombre chat.decision y el error not_found |
+
+### ¿Qué optimizarías primero y por qué?
+
+Validar si realmente tantas llamadas al modelo de Foundry son necesarias.
+
+### Conclusión
+
+OpenTelemetry y Application Insights permiten tener visibilidad de cada turno del agente, permite ver las interacciones con el modelo, cosmos, ai search y la petición a cada tool (mcp). Nos permite identificar errores y hacer seguimiento y traza a partir de su operation_id.
