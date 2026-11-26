@@ -100,3 +100,38 @@ INFO agent.application.chat_service: trayectoria 2451dade-79d3-47fe-bb6b-fd19bd9
 2. **Resiliencia ante errores de negocio e inputs inválidos:** Tanto los errores del backend (por ejemplo, cliente inexistente `CUS-9999`) como las violaciones de invariantes operativas (como solicitar dos acciones sensibles a la vez) son capturados y devueltos limpiamente como contexto de la tool. El modelo se recupera sin romperse y ofrece una respuesta guiada y clara al cliente.
 3. **Consistencia entre runtimes:** Tanto `agent_framework` como `react` respetan uniformemente los mismos puertos, interceptores de seguridad, memoria de trabajo de herramientas y límites de turnos.
 4. **Trazabilidad completa:** La emisión de líneas estructuradas de `trayectoria` en el log permite auditar con precisión la secuencia de eventos (`pending_approval`, `error`, `rejected`, `ok`) para observabilidad, análisis forense y cumplimiento regulatorio bancario.
+
+
+
+------------------------------------------------------------------------------------
+
+## Sesión 10 — Trazas por turno y dashboard
+
+Equipo: `team-03`. App Insights: `appi-team-03`. Los cuatro casos contra el agente desplegado (paso 8).
+
+| Caso | `operation_Id` | Latencia (ms) | Tokens de entrada | Tokens de salida | Tools | Error | Observaciones |
+|---|---|---|---|---|---|---|---|
+| Saludo | `acd721545a98cf77931881815abfe8b3` | 10379 | 1512 | 132 | — | — | Sin tools; latencia de 10.4s (4921 ms en LLM gpt-5-mini, primer token en 8.4s) |
+| Consulta con retrieval | `8ab830c0abc0d5b032b10b8683e0a54a` | 14529 | 1570 | 746 | — | — | Retrieval con embeddings (4 fuentes); 8130 ms en LLM gpt-5-mini, primer token en 11.6s |
+| Llamada a tool | `65753a3f9c11a8c61128a902c58e658f` | 25245 | 3651 | 1540 | get_transactions | — | 2 llamadas a LLM (16.9s) + get_transactions vía MCP (2.9s); primer token en 22.0s |
+| Error controlado | `1fe9b9ad6db0b8a0dd0d2cab679cb900` | 60 | — | — | — | 404 Not Found | Acción inexistente rechazada (POST /chat/actions falla con not_found) |
+
+En **Observaciones**, una línea: lo que llamó la atención de la traza (qué se llevó el tiempo, la dependencia que falló, si el
+error permite ubicar el turno). En **Tools**, `—` si el turno no llamó ninguna.
+
+### Lo que dice el workbook
+
+| Panel | Lo que viste |
+|---|---|
+| Latencia p95 por intención | `data_query` es la más lenta con p95 de 41.7s, seguida de `sensitive_action` (25.2s). Hasta un simple `greeting` se demora 10.3s. |
+| Tokens por turno | Se fueron ~16.6k tokens de entrada y ~5.6k de salida en 7 turnos. El context/system prompt infla la entrada en cada interacción. |
+| Dónde se va el tiempo de un turno | Casi todo se lo traga `Foundry - chat` (70.3s total, ~11.4s p95). Cosmos DB suma 21.1s porque mete 53 llamadas, y el MCP se lleva 19.7s. |
+| Tools con error | 1 fallo en `chat.decision` con `not_found` (la prueba del action_id inventado). En MCP hubo 1 error controlado en `get_transactions`. |
+
+### ¿Qué optimizarías primero y por qué?
+
+Las llamadas a `Foundry - chat` y los viajes a Cosmos DB. 10 segundos para responder un "hola" es lentísimo; se necesita recortar el system prompt o revisar la latencia del deployment. Y meter 53 llamadas a Cosmos para solo 7 turnos es demasiado: metería una caché en memoria para no pegarle a la BD en cada paso intermedio.
+
+### Conclusión
+
+El agente resuelve bien el flujo, las tools y los errores controlados sin caerse, pero está bastante pesado de latencia. Si se optimizan las consultas a Cosmos y se aligera el prompt para que el LLM responda más rápido, queda listo.
