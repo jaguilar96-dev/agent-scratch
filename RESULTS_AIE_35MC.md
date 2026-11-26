@@ -536,7 +536,7 @@ Equipo: `team-03`. Dominio: `fraud`.
 ........................................................................ [ 50%]
 ............................sssss....................................... [100%]
 139 passed, 5 skipped in 10.62s |
-| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | _(anotar)_ |
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | {'id': 'ff2c6dc6-d1c0-4805-9b6a-06e4cd23294a', 'messages': 6, 'pending': {'id': 'call_2dOofsHdhzuN26KlIqazKQ40', 'name': 'file_claim', 'arguments': {'customer_id': 'CUS-1001', 'transaction_id': 'TRX-3001', 'reason': 'Cargo duplicado en SUPERMERCADO DEMO SAN ISIDRO, solicito reclamo'}}} |
 | Imagen desplegada (`team-NN/agent:<sha>`) | IMAGE: acrworkshopjsu3.azurecr.io/team-03/agent:cefca1838dfb8f412b6883eb3d1e31c6be2b1f95 |
 | Revisión activa y duración del job `deploy` | El JOB duró 2m 9s, se puede validar en el enlace: https://github.com/jaguilar96-dev/agent-scratch/actions/runs/45732485041/job/139617879541 |
 | `/health` del agente desplegado | Agente en https://ca-agent-chat-03.icybush-2ea2dfc1.eastus2.azurecontainerapps.io: ok |
