@@ -6,6 +6,7 @@ uv run python dev/chat.py "Hola"     un solo mensaje y termina
 La respuesta aparece mientras el agente la escribe (POST /chat/stream, Server-Sent Events), y antes, cada tool que usa.
 Si el agente deja una acción sensible pendiente, la consola te pregunta como asesor si la apruebas (POST /chat/actions).
 AGENT_URL cambia la dirección del agente (por defecto http://127.0.0.1:8000).
+AGENT_SCOPE, solo para el agente en Azure: el scope de tu ficha. Cada pedido lleva un token de Entra de tu az login.
 """
 
 import json
@@ -26,12 +27,12 @@ TOOL_STATUS = {"ok": "resultado", "error": "error", "pending_approval": "NO SE E
 def send(message: str, session_id: str | None) -> str | None:
     """Envía el mensaje, muestra la respuesta mientras llega y devuelve el session_id para el siguiente turno."""
     body = json.dumps({"message": message, "session_id": session_id}).encode("utf-8")
-    request = urllib.request.Request(URL, data=body, headers={"Content-Type": "application/json"})
+    request = urllib.request.Request(URL, data=body, headers=headers())
     sent_at = time.perf_counter()
     try:
         response = urllib.request.urlopen(request, timeout=120)
     except urllib.error.HTTPError as error:  # falló antes de empezar a responder: llega como HTTP normal
-        show_error(error.code, json.loads(error.read().decode("utf-8")))
+        show_error(error.code, read_error(error))
         return None
     except urllib.error.URLError:
         sys.exit(f"No hay agente en {URL}. ¿Lo levantaste con uvicorn en otra terminal?")
@@ -120,6 +121,7 @@ def milliseconds_since(start: float) -> int:
 
 
 def main() -> None:
+    check_health()
     if len(sys.argv) > 1:
         send(" ".join(sys.argv[1:]), None)
         return
