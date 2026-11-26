@@ -576,3 +576,35 @@ Ninguno
 ### Conclusión
 
 La principal diferencia que veo entre Azure y local es el tiempo de respuesta.
+
+
+## Sesión 10 — Trazas por turno y dashboard
+
+Equipo: `team-03`. App Insights: `appi-team-03`. Los cuatro casos contra el agente desplegado (paso 8).
+
+| Caso | `operation_Id` | Latencia (ms) | Tokens de entrada | Tokens de salida | Tools | Error | Observaciones |
+|---|---|---|---|---|---|---|---|
+| Saludo | 215b1c4b8a35cd14f186ff9aec68e991 | 1692 | 1512 | 175 | — | — | — |
+| Consulta con retrieval | c6861f968b8752a85b9b13f0640aa8d7 | 21470 | 4831 | 2734 | get_transactions:ok | — | Intención `data_query` |
+| Llamada a tool | 9803ec92f94db88e80996e4a5fe192a3 | 16336 | 5881 | 1747 | file_claim:pending_approval | — | La acción sensible quedó pendiente de aprobación en el turno. |
+| Error controlado | 4dbc71db76a29c3aa84bcb207d2db1b1 | 29996 | 3978 | 2622 | get_transactions:error | error: {"error": "El servicio del banco no responde; intenta de nuevo en unos minutos"} | Fallo transitorio de disponibilidad del servicio MCP |
+
+
+### Lo que dice el workbook
+
+| Panel | Lo que viste |
+|---|---|
+| Latencia p95 por intención | sensitive_action: 30412, data_query: 22001, greeting: 2905 |
+| Tokens por turno | 4.8k |
+| Dónde se va el tiempo de un turno | Foundry - chat |
+| Tools con error | get_transactions:error |
+
+### ¿Qué optimizarías primero y por qué?
+
+La traza c6861f968b8752a85b9b13f0640aa8d7 get_transactions:ok con intención `data_query` y tomó 22 segundos. Revisando en los detalles de la transacción completa en App Insights se puede observar que se demoró 5.5 segundos en reescribir la consulta, 4 segundos para decidir que herramienta llamar y 11.8 segundos para interpretar los movimientos y redactar la respuesta. Teniendo en cuenta el análisis anterior probaría reasoning_effort: "low" en la respuesta final.
+
+También tendría en cuenta el error get_transactions falló tras 10 074 ms debido al arranque en frío de Azure Container Apps. La solución más simple sería configurar minReplicas: 1. Una solución más elaborada sería minReplicas: 0 durante la madrugada y minReplicas: 1 durante el resto del día.
+
+### Conclusión
+
+La implementación de observabilidad junto con el uso de la interfaz gráfica AppInsights permite encontrar más puntos de mejora en el rendimiento de nuestro agente.
