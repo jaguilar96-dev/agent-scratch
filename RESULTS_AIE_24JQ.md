@@ -311,7 +311,9 @@ En los logs de la revisión salen las mismas líneas que en mi laptop: `Foundry 
 - Docker Desktop estaba cerrado y `docker version` no mostraba el Server. Lo abrí, esperé que el motor arrancara y recién ahí construí las imágenes.
 - El primer intento del chat contra Azure se cortó en el `/health` por timeout. Al rato respondió 200 en 2 segundos, así que fue el arranque en frío de la réplica. Lo volví a correr y funcionó.
 - En la prueba local con Cosmos, el primer `get_transactions` respondió "El servicio del banco no responde". Era el banco en frío; en el siguiente mensaje el agente pidió el reclamo igual porque le di el TRX.
-- Para el `.env` saqué el endpoint de Cosmos con `az cosmosdb list` y usé el contenedor `team-03`.
+- Para el `.env` saqué el endpoint de Cosmos con `az cosmosdb list` y usé el contenedor `team-03`. Después lo comparé con `cosmos_shared.txt` de los materiales y era el mismo.
+- En `tenant_shared.txt` el `AZURE_CLIENT_ID` que viene es el de la app que protege la Container App (el mismo id de mi `AGENT_SCOPE`), no el de CI. El de CI de nuestro equipo sale con `az ad app list --display-name app-workshop-ci-team-03` y es otro. Como el deploy salió en verde, el capitán cargó el correcto.
+- Llené `verificacion-despliegue.csv` con la evidencia de esta tabla, sin tokens ni endpoints completos.
 
 ### Conclusión
 
