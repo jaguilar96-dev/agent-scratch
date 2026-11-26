@@ -1,11 +1,11 @@
 from openai import OpenAI
 
-from agent.domain.models import Message
+from agent.domain.models import AgentReply, Message
 from agent.infrastructure.llm.credentials import Credential
 
 
 class FoundryChatModel:
-    """Implementa el puerto ChatModel contra Microsoft Foundry (API v1 compatible con OpenAI)."""
+    """Implementa el puerto ChatModel contra Microsoft Foundry."""
 
     def __init__(
         self,
@@ -15,7 +15,6 @@ class FoundryChatModel:
         timeout_s: float,
         max_retries: int,
     ) -> None:
-        # el SDK reintenta con backoff timeouts, 429 y 5xx
         self.client = OpenAI(
             base_url=f"{endpoint.rstrip('/')}/openai/v1/",
             api_key=credential,
@@ -24,9 +23,24 @@ class FoundryChatModel:
         )
         self.deployment = deployment
 
-    def complete(self, messages: list[Message]):
-        # TODO S1: self.client.chat.completions.parse(model=..., messages=..., response_format=AgentReply)
-        #          y devolver message.parsed.
-        # TODO S2: medir latencia y tokens; traducir timeout, 429, salida inválida y errores de Foundry
-        #          a AgentError del dominio.
-        raise NotImplementedError("TODO S1: FoundryChatModel.complete")
+    def complete(self, messages: list[Message]) -> AgentReply:
+        # TODO S2: medir latencia y tokens; traducir timeout, 429,
+        # salida inválida y errores de Foundry a AgentError del dominio.
+
+        completion = self.client.chat.completions.parse(
+            model=self.deployment,
+            messages=messages,
+            response_format=AgentReply,
+        )
+
+        message = completion.choices[0].message
+
+        if message.parsed is None:
+            raise RuntimeError(
+                f"El modelo no devolvió el contrato: {message.refusal or 'vacío'}"
+            )
+
+        return message.parsed
+
+    # TODO S2: medir latencia y tokens; traducir errores
+    # de Foundry a AgentError del dominio.
