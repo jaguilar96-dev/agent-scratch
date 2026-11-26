@@ -316,3 +316,37 @@ En realidad siguiendo la guía paso a paso no he presentado problemas o errores 
 ### Conclusión
 
 El agente se desplegó correctamente en Azure y respondió a las consultas de la misma forma que cuando hacíamos pruebas locales. También se verificó que las acciones sensibles requieren aprobación humana y que el historial se conserva gracias a la integración con Cosmos DB. Las pruebas realizadas confirmaron el funcionamiento esperado del despliegue a través de los Actions de Github.
+
+# S10
+## Sesión 10 — Trazas por turno y dashboard
+
+Equipo: `team-03`. App Insights: `appi-team-03`. Los cuatro casos contra el agente desplegado (paso 8).
+
+| Caso | `operation_Id` | Latencia (ms) | Tokens de entrada | Tokens de salida | Tools | Error | Observaciones |
+|---|---|---|---|---|---|---|---|
+| Saludo | cf61badc32ff375533ac02706d24be22 | 5037 ms | 1488 | 388 | - | - | La suma de los tokens coincide con los tokens totales de Application Insights
+ |
+| Consulta con retrieval | d88fced4eae9fce2e06c2e40bf321eb7 | 44902 ms | 5812 | 2967 | get_transactions | Name: tools/call get_transactions, Type: N/A, Call status: false, Duration: 10.0 s | El primer intento a la tool falló, el segundo fue exitoso |
+| Llamada a tool | a8d54cdc99ae0ba1cf9fe93dadeacab8 | 58623 ms | 5046 | 2140 | file_claim | - | Hay un operation_id para cada file_claim: pending_approval y ok |
+| Error controlado | 58e4053f14ea31a47e5e2c9d89d44963 | 133 ms | - | - | - | POST /chat/actions falló: not_found: no hay una acción pendiente call-inventada en esta sesión | Message: not_found: no hay una acción pendiente call-inventada en esta sesión |
+
+En **Observaciones**, una línea: lo que llamó la atención de la traza (qué se llevó el tiempo, la dependencia que falló, si el
+error permite ubicar el turno). En **Tools**, `—` si el turno no llamó ninguna.
+
+### Lo que dice el workbook
+
+| Panel | Lo que viste |
+|---|---|
+| Latencia p95 por intención | sensitive_action: 44714ms, data_query: 26432ms, greeting: 9934ms |
+| Tokens por turno | Listado de las tools, file claim se divide en ok y pending_approval; así también get_transactions en ok y error |
+| Dónde se va el tiempo de un turno | El mayor tiempo lo veo en Foundry - chat, con 23 llamadas y el total ms es de 140940 |
+| Tools con error | Bueno, la única tool con error como tal es get_transactions |
+| Turnos con error | Me da el tiempo, el nombre chat.decision y el error not_found |
+
+### ¿Qué optimizarías primero y por qué?
+
+Validar si realmente tantas llamadas al modelo de Foundry son necesarias.
+
+### Conclusión
+
+OpenTelemetry y Application Insights permiten tener visibilidad de cada turno del agente, permite ver las interacciones con el modelo, cosmos, ai search y la petición a cada tool (mcp). Nos permite identificar errores y hacer seguimiento y traza a partir de su operation_id.
