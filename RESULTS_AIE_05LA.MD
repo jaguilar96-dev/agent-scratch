@@ -101,7 +101,50 @@ INFO agent.application.chat_service: trayectoria 2451dade-79d3-47fe-bb6b-fd19bd9
 3. **Consistencia entre runtimes:** Tanto `agent_framework` como `react` respetan uniformemente los mismos puertos, interceptores de seguridad, memoria de trabajo de herramientas y límites de turnos.
 4. **Trazabilidad completa:** La emisión de líneas estructuradas de `trayectoria` en el log permite auditar con precisión la secuencia de eventos (`pending_approval`, `error`, `rejected`, `ok`) para observabilidad, análisis forense y cumplimiento regulatorio bancario.
 
+------------------------------------------------------------------------------------
+## Sesión 9 — Despliegue en Azure
 
+Equipo: `team-03`. Dominio: `fraud`.
+
+| Comprobación | Resultado |
+|---|---|
+| Tests en el contenedor (paso 3) | `docker run --rm agent:test` → `139 passed, 5 skipped in 10.07s` (los 5 skipped son los golden sets de otros dominios; en mi máquina `uv run pytest` pasó con 140 passed, 4 skipped). |
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | Sí, funcionó al toque. Dejé `file_claim` colgado en `NO SE EJECUTA`, maté uvicorn sin piedad, lo volví a levantar y al mandarle `s` aprobó como si nada con `CLM-9001`. Cosmos DB (`workshop/team-03`) guardó la sesión sin perder nada. |
+| Imagen desplegada (`team-NN/agent:<sha>`) | `acrworkshopjsu3.azurecr.io/team-03/agent:bb682483ed0b1c7e929a1f3b731cb8e1c0cfaa6f` (repo `team-03/agent:bb682483ed0b1c7e929a1f3b731cb8e1c0cfaa6f`). |
+| Revisión activa y duración del job `deploy` | Revisión `ca-agent-chat-03--0000003` en Running (réplica `ca-agent-chat-03--0000003-767f558ccf-p54z2`). En GitHub Actions: job `test` tardó 37s y el `deploy` 2m 9s. |
+| `/health` del agente desplegado | `Agente en https://ca-agent-chat-03.icybush-2ea2dfc1.eastus2.azurecontainerapps.io: ok` (200 OK cantado en los logs: `"GET /health HTTP/1.1" 200 OK`). |
+| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | Le pregunté *"¿Cuál es el plazo para presentar un reclamo?"* y me tiró los 60 días para fraude / 1 año para comisiones, citando `claims-regulation.pdf` [3.1] y `fraud-and-claims-faq.md`. Primer texto en 6117 ms y respuesta completa en 6280 ms (1610 tokens in / 457 out). |
+| Acción aprobada contra Azure, con su `resultado:` | Corrí el flujo en Azure: consultó `get_transactions`, pidió registrar reclamo para TRX-3002, se frenó en `NO SE EJECUTA, pendiente de aprobación`, le metí `s` de asesor y soltó `resultado: {"id": "CLM-9001", "customer_id": "CUS-1001", "transaction_id": "TRX-3002", "reason": "Cargo duplicado en supermercado, solicito reclamo por TRX-3002", "status": "registered"}`. |
+
+### Qué pone Azure y qué pone la imagen
+
+**Azure (vía Terraform en la Container App):**
+`APPLICATIONINSIGHTS_CONNECTION_STRING`, `AZURE_CLIENT_ID`, `AZURE_OPENAI_ENDPOINT`, `COSMOS_CONTAINER`, `COSMOS_DATABASE`, `COSMOS_ENDPOINT`, `FOUNDRY_PROJECT_ENDPOINT`, `KEY_VAULT_URI`, `MCP_SCOPE`, `MCP_URL`, `SEARCH_ENDPOINT`, `SEARCH_INDEX`, `TEAM_ID`.
+Cero contraseñas o api keys en texto plano; son puros endpoints, nombres de recursos y la Managed Identity para que Azure se entienda solo.
+
+**La imagen (`runtime`):**
+Ya viene cocinada con lo que no cambia: `DOMAIN` (fraud), `FOUNDRY_AUTH_PROVIDER` (entra_id), `KNOWLEDGE_BASE` (azure_search), `AGENT_RUNTIME` (agent_framework), `PYTHONUNBUFFERED=1` y `PATH`.
+
+En los logs de arranque del contenedor se ve clarito cómo levanta todo de una:
+- `agent.infrastructure.bootstrap: Telemetría: App Insights del equipo`
+- `agent.infrastructure.bootstrap: Foundry auth provider: entra_id`
+- `agent.infrastructure.bootstrap: Knowledge base: azure_search · https://srch-workshop-jsu3.search.windows.net (índice idx-team-03) · 57 chunks`
+- `agent.infrastructure.bootstrap: Conversation store: Cosmos DB workshop/team-03`
+- `agent.infrastructure.bootstrap: MCP: https://ca-mcp-server.icybush-2ea2dfc1.eastus2.azurecontainerapps.io/mcp · 4 tools: get_transactions, get_claim_status, block_card, file_claim`
+- `agent.infrastructure.bootstrap: Agent runtime: agent_framework`
+- `Uvicorn running on http://0.0.0.0:8000`
+
+### Problemas que encontraste y cómo los resolviste
+
+- **Timeout en el primer `/health` (cold start):** Al probar contra Azure por primera vez se quedó pensando y dio timeout. No toqué nada de código: era solo el contenedor despertándose del frío. Esperé unos segundos, volví a tirar la petición y ya respondió en 200 ms.
+- **Error 401 en la consola:** Al correr `dev/chat.py` contra Azure me rebotó de una con 401. Me faltaba setear la variable `AGENT_SCOPE` en el entorno. Le puse el scope de la ficha, corrí `az login` para refrescar mi token de Entra ID y pasó directo.
+- **Reiniciar el server no pierde la sesión:** En las sesiones anteriores si reiniciaba `uvicorn` se borraba la acción pendiente de memoria y moría en 404. Ahora con Cosmos DB (`workshop/team-03`) puedo matar el proceso, ir por un café, volver a prenderlo y el asesor aprueba sin broncas.
+
+### Conclusión
+
+- Lo mejor de este despliegue es no tener que renegar con secretos ni rotar API keys. Con Managed Identity y OIDC en GitHub Actions todo se conecta solo sin meter credenciales en variables de entorno.
+- En Azure corre exactamente igual que en local. No hubo sorpresas raras de dependencias y el RAG con búsqueda híbrida responde bastante rápido (~6s trayendo fuentes reales de la normativa).
+- Cosmos DB resuelve de verdad el dolor de cabeza del human-in-the-loop: el contenedor puede reiniciarse o escalar y la conversación sigue viva. Menos cosas de qué preocuparse en producción.
 
 ------------------------------------------------------------------------------------
 
