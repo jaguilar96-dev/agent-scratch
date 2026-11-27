@@ -37,5 +37,5 @@ testpaths = ["tests"]
 pythonpath = ["tests", "dev/mcp"]
 
 [build-system]
-requires = ["uv_build>=0.8,<0.12"]
+requires = ["uv_build>=0.8,<0.14"]
 build-backend = "uv_build"
