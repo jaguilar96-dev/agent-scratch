@@ -3,13 +3,20 @@ name = "agent"
 version = "0.1.0"
 description = "Agente conversacional bancario en capas domain / application / infrastructure"
 requires-python = ">=3.12,<3.13"
+
 dependencies = [
     "azure-identity>=1.26.0",
     "fastapi>=0.115",
-    "openai>=3.35.1",
+    "openai>=2.35.1",
     "pydantic-settings>=2.16.0",
+    "pypdf>=6.21",
+    "python-docx>=1.2",
+    "qdrant-client>=1.20.0",
     "uvicorn>=0.30",
 ]
+
+[project.scripts]
+ingest = "agent.infrastructure.ingestion.cli:main"
 
 [dependency-groups]
 dev = [
